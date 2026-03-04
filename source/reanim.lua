@@ -4056,7 +4056,7 @@ function LimbReanimator.Start()
 			if h:GetState() ~= Enum.HumanoidStateType.Dead then
 				if false and LimbReanimator.InitMode ~= 0 and replicatesignal then
 					local a = Player:GetNetworkPing()
-					replicatesignal(Player.ConnectDiedSignalBackend)
+					--replicatesignal(Player.ConnectDiedSignalBackend)
 					local t = os.clock()
 					while h:GetState() ~= Enum.HumanoidStateType.Dead do
 						task.wait()
@@ -4072,7 +4072,7 @@ function LimbReanimator.Start()
 						h.Health = 0
 						task.delay(1, function()
 							if h:IsDescendantOf(workspace) then
-								replicatesignal(Player.ConnectDiedSignalBackend)
+								--replicatesignal(Player.ConnectDiedSignalBackend)
 								h:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
 								h:ChangeState(Enum.HumanoidStateType.Dead)
 							end
@@ -5894,7 +5894,7 @@ function HatReanimator.Start()
 		local cdsbeffect = os.clock()
 		local cdsbtime = os.clock()
 		if perma then
-			replicatesignal(Player.ConnectDiedSignalBackend)
+			--replicatesignal(Player.ConnectDiedSignalBackend)
 			HatReanimator.Status.Permadeath = "Fired CDSB Signal."
 			cdsbeffect += Players.RespawnTime
 		end
@@ -6141,7 +6141,7 @@ function HatReanimator.Start()
 			pcall(function() Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Dead) end)
 			pcall(function() Player.Character.Humanoid.Health = 0 end)
 			pcall(replicatesignal, Player.Character.Humanoid.ServerBreakJoints)
-			pcall(replicatesignal, Player.ConnectDiedSignalBackend)
+			--pcall(replicatesignal, Player.ConnectDiedSignalBackend)
 			Player.Character.DescendantAdded:Connect(CharOnDesc)
 			for _,v in Player.Character:GetDescendants() do
 				CharOnDesc(v)
