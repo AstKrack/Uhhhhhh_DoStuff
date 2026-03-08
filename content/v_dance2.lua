@@ -643,7 +643,7 @@ AddModule(function()
 	local animator2 = nil
 	local instances = {}
 	local modelcf = {}
-	local HIDECF = CFrame.new(0, -10000, 0)
+	local HIDECF = CFrame.new(0, -9e9, 0)
 	local function pivotto(bp, cf)
 		if modelcf[bp] ~= cf then
 			modelcf[bp] = cf
@@ -678,7 +678,7 @@ AddModule(function()
 			end
 			for _,name in vegetable do
 				instances[name .. "2"] = instances[name]:Clone()
-				instances[name .. "2"].Parent = figure
+				instances[name .. "2"].Parent = vegetables
 			end
 			vegetables.Name = "miku miku oo ee oo"
 			vegetables.Parent = workspace
