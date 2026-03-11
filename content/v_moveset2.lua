@@ -6249,12 +6249,15 @@ AddModule(function()
 				return rt, nt, rst, lst, rht, lht, hat, 12
 			end
 			task.wait(0.2)
-			local hit = MouseHit()
-			AuraEffect(1, 0, "Add", CFrame.new(hit), 0, 0, 0, 0, Color3.new(1, 1, 1), Vector3.zero, "Sphere", "115974234844378", 1)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			AuraEffect(1, 0, "Add", rootu.CFrame + Vector3.new(0, 200, 0), 0, 0, 0, 0, Color3.new(1, 1, 1), Vector3.zero, "Sphere", "115974234844378", 1)
 			task.wait(0.8)
 			if not rootu:IsDescendantOf(workspace) then
 				return
 			end
+			local hit = MouseHit()
 			AuraEffect(5, 0, "Add", CFrame.new(hit) * CFrame.new(0, -2.9, 0), 0, 0, 0, 1, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
 			AuraEffect(10, 0, "Add", CFrame.new(hit) * CFrame.new(0, -2.9, 0), 0, 0, 0, 2, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
 			AuraEffect(1, 0, "Add", CFrame.new(hit), 1, 100000, 1, 0.5, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
