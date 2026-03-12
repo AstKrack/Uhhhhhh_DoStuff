@@ -221,8 +221,7 @@ Util.ForceTextSize = function(inst)
 		local original = inst.TextSize
 		local conn conn = RunService.PreRender:Connect(function()
 			local size = TextService:GetTextSize("TEST", original, inst.Font, Vector2.new(math.huge, math.huge))
-			inst.TextSize = (original / size.Y) * original
-			print(original, size.Y)
+			inst.TextSize = math.floor((original / size.Y) * original)
 		end)
 		Util.LinkDestroyI2C(inst, conn)
 	end
