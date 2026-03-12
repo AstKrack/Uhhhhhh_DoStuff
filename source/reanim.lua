@@ -21,7 +21,7 @@ Thou shalth not steal. Point at this source if you used a snippet here.
 if _G.UhhhhhhLoaded then return end
 _G.UhhhhhhLoaded = true
 
-local UhhhhhhVersion = "1.0.5 BETA"
+local UhhhhhhVersion = "1.0.6 BETA"
 
 cloneref = cloneref or function(o) return o end
 getcustomasset = getcustomasset or getsynasset
@@ -3979,10 +3979,11 @@ SaveData.Reanimator.LimbReplicateFPS10 = not not SaveData.Reanimator.LimbReplica
 SaveData.Reanimator.LimbRoleplay = not not SaveData.Reanimator.LimbRoleplay
 SaveData.Reanimator.LimbUseNaNFling = not not SaveData.Reanimator.LimbUseNaNFling
 LimbReanimator.Mode = SaveData.Reanimator.LimbMode
--- 0 = hide rootpart (defaults to 1 when streaming is enabled)
--- 1 = keep rootpart streamed, puts rootpart below character
--- 2 = currentangle styled
--- 3 = rootpart is torso (most interpolated mode)
+-- 0 = hide rootpart (defaults to 2 when streaming is enabled)
+-- 1 = put rootpart just under void (defaults to 2 when streaming is enabled)
+-- 2 = keep rootpart streamed, puts rootpart below character
+-- 3 = currentangle styled
+-- 4 = rootpart is torso (most interpolated mode)
 LimbReanimator.Velocity = SaveData.Reanimator.LimbVelocity
 -- 0 = no velocity
 -- 1 = copy from fake character
@@ -4086,6 +4087,11 @@ function LimbReanimator.Start()
 		math.random(-65536, 65536),
 		math.random(-70000, -60000),
 		math.random(-65536, 65536)
+	)
+	local rootposition2 = Vector3.new(
+		math.random(-2048, 2048),
+		math.random(-500, -100) + FallenPartsDestroyHeight,
+		math.random(-2048, 2048)
 	)
 	local InitCFrame = nil
 	if Player.Character then
@@ -4302,13 +4308,16 @@ function LimbReanimator.Start()
 			local RCRootPart = ReanimCharacter:FindFirstChild("HumanoidRootPart")
 			local RCTorso = ReanimCharacter:FindFirstChild("Torso")
 			if RCRootPart and RCTorso then
-				if LimbReanimator.Mode == 1 or workspace.StreamingEnabled then
+				if LimbReanimator.Mode == 1 then
+					rootcf = CFrame.new(rootposition2)
+				end
+				if LimbReanimator.Mode == 2 or workspace.StreamingEnabled then
 					rootcf = CFrame.new(RCRootPart.Position + Vector3.new(0, -16, 0))
 				end
-				if LimbReanimator.Mode == 2 then
+				if LimbReanimator.Mode == 3 then
 					rootcf = RCRootPart.CFrame
 				end
-				if LimbReanimator.Mode == 3 then
+				if LimbReanimator.Mode == 4 then
 					rootcf = RCTorso.CFrame
 				end
 				if LimbReanimator.Velocity == 1 then

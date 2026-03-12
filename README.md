@@ -294,10 +294,11 @@ Util_CreateSeparator
 LimbReanimator
 	.Running -- is running
 	.SetRootPartMode(mode) -- set rootpart mode
-		-- 0 - RootPart in void
-		-- 1 - Keep RootPart streamed
-		-- 2 - CurrentAngle style
-		-- 3 - RootPart is Torso
+		-- 0 - RootPart in very void
+		-- 1 - RootPart in void
+		-- 2 - Keep RootPart streamed
+		-- 3 - CurrentAngle style
+		-- 4 - RootPart is Torso
 HatReanimator
 	.Running -- is running
 	.HasPermadeath -- has permadeath?

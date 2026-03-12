@@ -954,7 +954,7 @@ AddModule(function()
 				if newdodgestate then
 					LimbReanimator.SetRootPartMode(0)
 				else
-					LimbReanimator.SetRootPartMode(2)
+					LimbReanimator.SetRootPartMode(3)
 				end
 			end
 		end

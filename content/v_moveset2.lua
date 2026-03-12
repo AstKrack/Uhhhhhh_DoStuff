@@ -5662,7 +5662,6 @@ AddModule(function()
 
 	local start = 0
 	local hum, root, torso
-	local scale = 1
 	local isdancing = false
 	local rcp = RaycastParams.new()
 	rcp.FilterType = Enum.RaycastFilterType.Exclude
@@ -6370,7 +6369,6 @@ AddModule(function()
 	end
 	m.Init = function(figure)
 		start = os.clock()
-		state = 0
 		timingsine = 0
 		walkspeed = 10
 		attacking = false
@@ -6455,7 +6453,7 @@ AddModule(function()
 		if not torso then return end
 		
 		-- joints
-		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
+		local rt, nt, rst, lst, rht, lht, hat = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
 		
 		timingsine += change * dt * 60
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
