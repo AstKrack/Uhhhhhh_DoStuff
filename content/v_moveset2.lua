@@ -3900,6 +3900,9 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Clientside Dragon Model", m.ClientsideDragon).Changed:Connect(function(val)
 			m.ClientsideDragon = val
 		end)
+		Util_CreateSwitch(parent, "Use limbs for Dragon", m.BecomeDragon).Changed:Connect(function(val)
+			m.BecomeDragon = val
+		end)
 		Util_CreateSwitch(parent, "Hitbox Visual", m.HitboxDebug).Changed:Connect(function(val)
 			m.HitboxDebug = val
 		end)
@@ -3927,6 +3930,7 @@ AddModule(function()
 		m.SkipIntro = not not save.SkipIntro
 		m.AltIntro = not not save.AltIntro
 		m.ClientsideDragon = not save.NoClientsideDragon
+		m.BecomeDragon = save.BecomeDragon
 		m.HitboxDebug = not not save.HitboxDebug
 		m.NoCooldown = not not save.NoCooldown
 		m.BlastCharge = save.BlastCharge or m.BlastCharge
@@ -3941,6 +3945,7 @@ AddModule(function()
 			SkipIntro = m.SkipIntro,
 			AltIntro = m.AltIntro,
 			NoClientsideDragon = not m.ClientsideDragon,
+			BecomeDragon = m.BecomeDragon,
 			HitboxDebug = m.HitboxDebug,
 			NoCooldown = m.NoCooldown,
 			BlastCharge = m.BlastCharge,
@@ -5553,6 +5558,41 @@ AddModule(function()
 		insts.HeadWeld.C0 = joints.dh + joints.dh.Position * (scale - 1)
 		insts.ClawLWeld.C0 = joints.dl + joints.dl.Position * (scale - 1)
 		insts.ClawRWeld.C0 = joints.dr + joints.dr.Position * (scale - 1)
+
+		if m.BecomeDragon then
+			rj.Enabled, nj.Enabled, rsj.Enabled, lsj.Enabled, rhj.Enabled, lhj.Enabled = false, false, false, false, false, false
+			hum.HipHeight = 2 * scale
+			local head = figure:FindFirstChild("Head")
+			local rarm = figure:FindFirstChild("Right Arm")
+			local larm = figure:FindFirstChild("Left Arm")
+			local rleg = figure:FindFirstChild("Right Leg")
+			local lleg = figure:FindFirstChild("Left Leg")
+			torso.CFrame = insts.HeadPart.CFrame * CFrame.Angles(0, math.pi * 0.5, 0) * CFrame.new(0, 0, -1)
+			torso.Velocity, torso.RotVelocity = Vector3.zero, Vector3.zero
+			if head then
+				head.CFrame = insts.HeadPart.CFrame * CFrame.Angles(0, math.pi * 0.5, 0) * CFrame.new(0, 0, -2)
+				head.Velocity, head.RotVelocity = Vector3.zero, Vector3.zero
+			end
+			if rarm then
+				rarm.CFrame = insts.ClawRWeld.CFrame * CFrame.Angles(math.pi * 0.5, 0, 0) * CFrame.new(0.5, 0, 0)
+				rarm.Velocity, rarm.RotVelocity = Vector3.zero, Vector3.zero
+			end
+			if larm then
+				larm.CFrame = insts.ClawLWeld.CFrame * CFrame.Angles(math.pi * 0.5, 0, 0) * CFrame.new(-0.5, 0, 0)
+				larm.Velocity, larm.RotVelocity = Vector3.zero, Vector3.zero
+			end
+			if rleg then
+				rleg.CFrame = insts.ClawRWeld.CFrame * CFrame.Angles(math.pi * 0.5, 0, 0) * CFrame.new(-0.5, 0, 0)
+				rleg.Velocity, rleg.RotVelocity = Vector3.zero, Vector3.zero
+			end
+			if lleg then
+				lleg.CFrame = insts.ClawLWeld.CFrame * CFrame.Angles(math.pi * 0.5, 0, 0) * CFrame.new(0.5, 0, 0)
+				lleg.Velocity, lleg.RotVelocity = Vector3.zero, Vector3.zero
+			end
+		else
+			rj.Enabled, nj.Enabled, rsj.Enabled, lsj.Enabled, rhj.Enabled, lhj.Enabled = true, true, true, true, true, true
+			hum.HipHeight = 2 * scale - 2
+		end
 
 		-- bullet and aura
 		if bulletstate[3] < os.clock() - 0.5 then
