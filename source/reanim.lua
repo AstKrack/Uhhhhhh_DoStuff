@@ -5106,6 +5106,7 @@ function HatReanimator.Start()
 							local att = AttmentGet(x.Name)
 							if att then
 								limb, c0, c1 = att[1], att[2], x.CFrame
+								break
 							end
 						end
 					end

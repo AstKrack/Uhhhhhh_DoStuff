@@ -5575,19 +5575,19 @@ AddModule(function()
 				head.Velocity, head.RotVelocity = Vector3.zero, Vector3.zero
 			end
 			if rarm then
-				rarm.CFrame = insts.ClawRPart.CFrame * CFrame.Angles(math.pi * 0.5, 0, 0) * CFrame.new(0.5, 0, 0)
+				rarm.CFrame = insts.ClawRPart.CFrame * CFrame.Angles(math.pi * -0.5, 0, 0) * CFrame.new(0.5, 0, 0)
 				rarm.Velocity, rarm.RotVelocity = Vector3.zero, Vector3.zero
 			end
 			if larm then
-				larm.CFrame = insts.ClawLPart.CFrame * CFrame.Angles(math.pi * 0.5, 0, 0) * CFrame.new(-0.5, 0, 0)
+				larm.CFrame = insts.ClawLPart.CFrame * CFrame.Angles(math.pi * -0.5, 0, 0) * CFrame.new(-0.5, 0, 0)
 				larm.Velocity, larm.RotVelocity = Vector3.zero, Vector3.zero
 			end
 			if rleg then
-				rleg.CFrame = insts.ClawRPart.CFrame * CFrame.Angles(math.pi * 0.5, 0, 0) * CFrame.new(-0.5, 0, 0)
+				rleg.CFrame = insts.ClawRPart.CFrame * CFrame.Angles(math.pi * -0.5, 0, 0) * CFrame.new(-0.5, 0, 0)
 				rleg.Velocity, rleg.RotVelocity = Vector3.zero, Vector3.zero
 			end
 			if lleg then
-				lleg.CFrame = insts.ClawLPart.CFrame * CFrame.Angles(math.pi * 0.5, 0, 0) * CFrame.new(0.5, 0, 0)
+				lleg.CFrame = insts.ClawLPart.CFrame * CFrame.Angles(math.pi * -0.5, 0, 0) * CFrame.new(0.5, 0, 0)
 				lleg.Velocity, lleg.RotVelocity = Vector3.zero, Vector3.zero
 			end
 		else
