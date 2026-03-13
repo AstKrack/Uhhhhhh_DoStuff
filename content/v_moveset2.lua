@@ -4777,7 +4777,7 @@ AddModule(function()
 			local blast = Instance.new("Part")
 			blast.Color = maincolor
 			blast.Material = "Neon"
-			blast.Anchored = false
+			blast.Anchored = true
 			blast.CanCollide = false
 			blast.CanQuery = false
 			blast.CanTouch = false
