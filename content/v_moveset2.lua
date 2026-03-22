@@ -6874,7 +6874,7 @@ AddModule(function()
 	local hasgun = false
 	local gunspin = false
 	local lastfly = false
-	local mustfly = false
+	local mustfly = 0
 	local animationOverride = nil
 	local flysound = nil
 	local ROOTC0 = CFrame.Angles(-1.57, 0, 3.14)
@@ -7320,30 +7320,26 @@ AddModule(function()
 			hum.JumpPower = 0
 		else
 			hum.WalkSpeed = walkspeed * scale
-			local wasonground = false
 			if onground then
 				hum.JumpPower = 50 * scale
+				mustfly = 0.2
 			else
-				if hum.JumpPower ~= 0 then
-					wasonground = true
-				end
+				mustfly = math.max(0, mustfly - dt)
 				hum.JumpPower = 0
 			end
-			if lastfly ~= hum.Jump then
-				lastfly = hum.Jump
+			local gofly = mustfly == 0 and hum.Jump
+			if lastfly ~= gofly then
+				lastfly = gofly
 				if lastfly then
-					mustfly = not wasonground
-					if mustfly then
-						CreateSound("123619882242196")
-						MagicSphere(Vector3.zero, 5, torso.CFrame * CFrame.new(-0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(0.5, 0.1, 0.5) * scale)
-						MagicSphere(Vector3.zero, 5, torso.CFrame * CFrame.new(0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(0.5, 0.1, 0.5) * scale)
-						root.Velocity += Vector3.new(0, 50, 0)
-					end
+					CreateSound("123619882242196")
+					MagicSphere(Vector3.zero, 5, torso.CFrame * CFrame.new(-0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(2, 0.1, 2) * scale)
+					MagicSphere(Vector3.zero, 5, torso.CFrame * CFrame.new(0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(2, 0.1, 2) * scale)
+					root.Velocity += Vector3.new(0, 50, 0)
 				else
 					CreateSound("128788885488982")
 				end
 			end
-			if mustfly and hum.Jump then
+			if gofly then
 				flysound.Volume = math.min(5, flysound.Volume + dt * 20)
 				hum.WalkSpeed *= 4
 				root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
