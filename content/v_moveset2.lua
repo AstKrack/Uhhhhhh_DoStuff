@@ -7319,12 +7319,13 @@ AddModule(function()
 			hum.WalkSpeed = walkspeed * scale
 			hum.JumpPower = 50 * scale
 			if hum.Jump then
-				flysound.Volume = math.min(10, flysound.Volume + dt * 40)
+				flysound.Volume = math.min(5, flysound.Volume + dt * 20)
+				hum.WalkSpeed *= 4
 				root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
 				MagicSphere(Vector3.one * scale, 10, torso.CFrame * CFrame.new(-0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(-0.1, 0.2, -0.1) * scale)
 				MagicSphere(Vector3.one * scale, 10, torso.CFrame * CFrame.new(0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(-0.1, 0.2, -0.1) * scale)
 			else
-				flysound.Volume = math.max(0, flysound.Volume - dt * 40)
+				flysound.Volume = math.max(0, flysound.Volume - dt * 20)
 			end
 			flysound.Playing = flysound.Volume > 0.05
 			if lastfly ~= hum.Jump then
