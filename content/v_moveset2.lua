@@ -6874,6 +6874,7 @@ AddModule(function()
 	local hasgun = false
 	local gunspin = false
 	local lastfly = false
+	local mustfly = false
 	local animationOverride = nil
 	local flysound = nil
 	local ROOTC0 = CFrame.Angles(-1.57, 0, 3.14)
@@ -7312,13 +7313,23 @@ AddModule(function()
 		if not root then return end
 		if not torso then return end
 		
+		local onground = hum:GetState() == Enum.HumanoidStateType.Running
+		
 		if attacking then
 			hum.WalkSpeed = 8 * scale
 			hum.JumpPower = 0
 		else
 			hum.WalkSpeed = walkspeed * scale
-			hum.JumpPower = 50 * scale
-			if hum.Jump then
+			local wasonground = false
+			if onground then
+				hum.JumpPower = 50 * scale
+			else
+				if hum.JumpPower ~= 0 then
+					wasonground = true
+				end
+				hum.JumpPower = 0
+			end
+			if mustfly and hum.Jump then
 				flysound.Volume = math.min(5, flysound.Volume + dt * 20)
 				hum.WalkSpeed *= 4
 				root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
@@ -7330,21 +7341,22 @@ AddModule(function()
 			flysound.Playing = flysound.Volume > 0.05
 			if lastfly ~= hum.Jump then
 				lastfly = hum.Jump
-				if lastfly then
-					CreateSound("123619882242196")
-					MagicSphere(Vector3.zero, 5, torso.CFrame * CFrame.new(-0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(0.5, 0.1, 0.5) * scale)
-					MagicSphere(Vector3.zero, 5, torso.CFrame * CFrame.new(0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(0.5, 0.1, 0.5) * scale)
-				else
-					CreateSound("128788885488982")
+				mustfly = not wasonground
+				if mustfly then
+					if lastfly then
+						CreateSound("123619882242196")
+						MagicSphere(Vector3.zero, 5, torso.CFrame * CFrame.new(-0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(0.5, 0.1, 0.5) * scale)
+						MagicSphere(Vector3.zero, 5, torso.CFrame * CFrame.new(0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(0.5, 0.1, 0.5) * scale)
+					else
+						CreateSound("128788885488982")
+					end
 				end
 			end
 		end
 		
 		-- joints
 		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
-		
 		timingsine += dt
-		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		
 		-- animations
 		local torsovelocity = root.Velocity.Magnitude / scale
