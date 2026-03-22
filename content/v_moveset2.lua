@@ -6631,4 +6631,818 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "MOVESET"
+	m.Name = "Banisher"
+	m.InternalName = "FIGHTERGUY"
+	m.Description = "hes tuff\nF - Holster/Unholster Gun"
+	m.Assets = {"BanisherTheme.mp3"}
+
+	m.Notifications = true
+	m.Sounds = true
+	m.NoCooldown = false
+	m.IgnoreDancing = false
+	m.HitboxDebug = false
+	m.ParkourAnims = true
+	m.UseSword = false
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Tuff", m.Notifications).Changed:Connect(function(val)
+			m.Notifications = val
+		end)
+		Util_CreateSwitch(parent, "Sounds", m.Sounds).Changed:Connect(function(val)
+			m.Sounds = val
+		end)
+		Util_CreateSwitch(parent, "No Cooldown", m.NoCooldown).Changed:Connect(function(val)
+			m.NoCooldown = val
+		end)
+		Util_CreateSwitch(parent, "Ignore Dancing", m.IgnoreDancing).Changed:Connect(function(val)
+			m.IgnoreDancing = val
+		end)
+		Util_CreateSwitch(parent, "Hitbox Visual", m.HitboxDebug).Changed:Connect(function(val)
+			m.HitboxDebug = val
+		end)
+		Util_CreateSwitch(parent, "Fall Parkour Anim", m.ParkourAnims).Changed:Connect(function(val)
+			m.ParkourAnims = val
+		end)
+		Util_CreateSwitch(parent, "Use Sword instead of Gun", m.UseSword).Changed:Connect(function(val)
+			m.UseSword = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Notifications = not save.Blind
+		m.Sounds = not save.Muted
+		m.NoCooldown = not not save.NoCooldown
+		m.IgnoreDancing = not not save.IgnoreDancing
+		m.HitboxDebug = not not save.HitboxDebug
+		m.ParkourAnims = not save.MoreTuff
+		m.UseSword = not not save.UseSword
+	end
+	m.SaveConfig = function()
+		return {
+			Blind = not m.Notifications,
+			Muted = not m.Sounds,
+			NoCooldown = m.NoCooldown,
+			IgnoreDancing = m.IgnoreDancing,
+			HitboxDebug = m.HitboxDebug,
+			MoreTuff = not m.ParkourAnims,
+			UseSword = m.UseSword,
+		}
+	end
+
+	local start = 0
+	local hum, root, torso
+	local isdancing = false
+	local rcp = RaycastParams.new()
+	rcp.FilterType = Enum.RaycastFilterType.Exclude
+	rcp.IgnoreWater = true
+	local function PhysicsRaycast(origin, direction)
+		rcp.RespectCanCollide = true
+		return workspace:Raycast(origin, direction, rcp)
+	end
+	local function ShootRaycast(origin, direction)
+		rcp.RespectCanCollide = false
+		return workspace:Raycast(origin, direction, rcp)
+	end
+	local mouse = Player:GetMouse()
+	local function MouseHit()
+		local Camera = workspace.CurrentCamera
+		local ray = mouse.UnitRay
+		if UserInputService.TouchEnabled and Camera then
+			local pos = Camera.ViewportSize * Vector2.new(0.5, 0.3)
+			ray = Camera:ViewportPointToRay(pos.X, pos.Y, 1e-6)
+		end
+		local dist = 2000
+		local raycast = ShootRaycast(ray.Origin, ray.Direction * dist)
+		if raycast then
+			return raycast.Position
+		end
+		return ray.Origin + ray.Direction * dist
+	end
+	local function CreateSound(id, pitch, extra)
+		if not m.Sounds then return end
+		if not torso then return end
+		local parent = torso
+		if typeof(id) == "Instance" then
+			parent = id
+			id, pitch = pitch, extra
+		end
+		pitch = pitch or 1
+		local sound = Instance.new("Sound")
+		sound.Name = tostring(id)
+		sound.SoundId = "rbxassetid://" .. id
+		sound.Volume = 1
+		sound.Pitch = pitch
+		sound.EmitterSize = 100
+		sound.Parent = parent
+		sound:Play()
+		sound.Ended:Connect(function()
+			sound:Destroy()
+		end)
+	end
+	local function AimTowards(target)
+		if not root then return end
+		if flight then return end
+		local tcf = CFrame.lookAt(root.Position, target)
+		local _,off,_ = root.CFrame:ToObjectSpace(tcf):ToEulerAngles(Enum.RotationOrder.YXZ)
+		root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 60
+	end
+	local function Attack(cf, size)
+		if m.HitboxDebug then
+			local hitvis = Instance.new("Part")
+			hitvis.Name = RandomString() -- built into Uhhhhhh
+			hitvis.CastShadow = false
+			hitvis.Material = Enum.Material.ForceField
+			hitvis.Anchored = true
+			hitvis.CanCollide = false
+			hitvis.CanTouch = false
+			hitvis.CanQuery = false
+			hitvis.Shape = Enum.PartType.Block
+			hitvis.Color = Color3.new(0, 0, 0)
+			hitvis.Size = size
+			hitvis.CFrame = cf
+			hitvis.Parent = workspace
+			Debris:AddItem(hitvis, 1)
+		end
+		local hashmap = {}
+		local parts = workspace:GetPartBoundsInBox(cf, size)
+		for _,part in parts do
+			if part.Parent then
+				local hum = part.Parent:FindFirstChildOfClass("Humanoid")
+				if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
+					if ReanimateFling(part.Parent) then
+						hashmap[hum.RootPart] = true
+					end
+				end
+			end
+		end
+		local hitstuff = {}
+		for k,_ in hashmap do
+			table.insert(hitstuff, k)
+		end
+		return hitstuff
+	end
+	local function notify(message)
+		if not m.Notifications then return end
+		if not root or not torso then return end
+		local dialog = torso:FindFirstChild("NOTIFICATION")
+		if dialog then
+			dialog:Destroy()
+		end
+		dialog = Instance.new("BillboardGui", torso)
+		dialog.Size = UDim2.new(50 * scale, 0, 2 * scale, 0)
+		dialog.StudsOffset = Vector3.new(0, 5 * scale, 0)
+		dialog.Adornee = torso
+		dialog.Name = "NOTIFICATION"
+		local text = Instance.new("TextLabel", dialog)
+		text.BackgroundTransparency = 1
+		text.BorderSizePixel = 0
+		text.Text = ""
+		text.Font = "Antique"
+		text.TextScaled = true
+		text.TextStrokeTransparency = 0
+		text.TextStrokeColor3 = Color3.new(0, 0, 0)
+		text.Size = UDim2.new(1, 0, 1, 0)
+		text.ZIndex = 0
+		text.TextColor3 = Color3.new(1, 1, 1)
+		task.spawn(function()
+			local function update()
+				text.TextColor3 = Color3.new(0.5 + (math.random() ^ 3) * 0.5, 0, 0)
+			end
+			local cps = 20
+			local t = os.clock()
+			local ll = 0
+			repeat
+				task.wait()
+				local l = math.floor((os.clock() - t) * cps)
+				if l > ll then
+					ll = l
+					CreateSound("7175909725")
+				end
+				update()
+				text.Text = string.sub(message, 1, l)
+			until ll >= #message or not dialog.Parent == torso
+			text.Text = message
+			t = os.clock()
+			repeat
+				task.wait()
+				update()
+			until os.clock() - t > 2
+			t = os.clock()
+			repeat
+				task.wait()
+				update()
+				local a = os.clock() - t
+				text.TextTransparency = a
+				text.TextStrokeTransparency = a
+			until os.clock() - t > 1
+			dialog:Destroy()
+		end)
+	end
+	local function randomdialog(arr)
+		notify(arr[math.random(1, #arr)])
+	end
+	local chatconn
+	local joints = {
+		r = CFrame.identity,
+		n = CFrame.identity,
+		rs = CFrame.identity,
+		ls = CFrame.identity,
+		rh = CFrame.identity,
+		lh = CFrame.identity,
+	}
+	local gun = {}
+	local bullet = {}
+	local bulletstate = {Vector3.zero, Vector3.zero, 0}
+	local function SetBulletState(hole, target)
+		local dist = (target - hole).Magnitude
+		bulletstate[1] = hole
+		if dist > 256 then
+			bulletstate[2] = hole + (target - hole).Unit * 256
+		else
+			bulletstate[2] = target
+		end
+		bulletstate[3] = os.clock()
+	end
+	local attacking = false
+	local state = 0
+	local timingsine = 0
+	local walkspeed = 0
+	local walktime = 0
+	local falltime = 0
+	local hasgun = false
+	local gunspin = false
+	local lastfly = false
+	local animationOverride = nil
+	local flysound = nil
+	local ROOTC0 = CFrame.Angles(-1.57, 0, 3.14)
+	local NECKC0 = CFrame.new(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
+	local RIGHTSHOULDERC0 = CFrame.new(-0.5, 0, 0) * CFrame.Angles(0, math.rad(90), 0)
+	local LEFTSHOULDERC0 = CFrame.new(0.5, 0, 0) * CFrame.Angles(0, math.rad(-90), 0)
+	local lerps = {
+		idle = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = CFrame.new(0, -0.1 + 0.1 * math.sin((timingsine + 1.6) * 1), 0.1 * math.sin(timingsine * 1)) * CFrame.fromEulerAngles(-1.484 + 0.035 * math.sin(timingsine * 1), 0, 2.793)
+			nt = CFrame.new(0, 1.02 + 0.05 * math.sin(timingsine * 1), 0) * CFrame.fromEulerAngles(-1.658 + 0.035 * math.sin(timingsine * 1), 0, 3.491)
+			rst = CFrame.new(1, 0.1 * math.sin(timingsine * 1), 0) * CFrame.fromEulerAngles(0, 2.269, 2.269 - 0.035 * math.sin((timingsine + 1.6) * 1))
+			lst = CFrame.new(-1, 0.1 * math.sin(timingsine * 1), 0) * CFrame.fromEulerAngles(0, -1.92, -2.269 - 0.035 * math.sin((timingsine + 1.6) * 1))
+			rht = CFrame.new(1.1, -1 - 0.08 * math.sin((timingsine + 1.6) * 1), -0.05 * math.sin(timingsine * 1)) * CFrame.fromEulerAngles(0.175 - 0.017 * math.sin(timingsine * 1), 1.745, -0.524)
+			lht = CFrame.new(-1.1, -1.1 - 0.08 * math.sin((timingsine + 1.6) * 1), -0.05 * math.sin(timingsine * 1)) * CFrame.fromEulerAngles(-0.017 * math.sin(timingsine * 1), -1.047, -0.349)
+			return rt, nt, rst, lst, rht, lht, 16
+		end,
+		walk = function(timingsine, rt, nt, rst, lst, rht, lht)
+			lht = CFrame.new(-1, -0.95 - 0.05 * math.sin((timingsine + 0.5) * 4), 0.1 * math.sin((timingsine + 0.2) * 4)) * CFrame.fromEulerAngles(-0.349 * math.sin((timingsine + 0.3) * 4), -1.571, 0)
+			nt = CFrame.new(-0.05 * math.sin(timingsine * 4), 1, 0) * CFrame.fromEulerAngles(-1.658, -0.035 * math.sin((timingsine - 0.5) * 4), 3.142 - 0.087 * math.sin(timingsine * 4))
+			rst = CFrame.new(1, 0.01 * math.sin(timingsine * 4), 0) * CFrame.fromEulerAngles(0, 2.094, 2.269 - 0.035 * math.sin((timingsine + 0.4) * 4))
+			rt = CFrame.new(0, -0.1 + 0.05 * math.sin(timingsine * 8), 0) * CFrame.fromEulerAngles(-1.571, 0.017 * math.sin((timingsine + 0.5) * 4), 3.142 + 0.087 * math.sin(timingsine * 4))
+			rht = CFrame.new(1, -0.95 + 0.05 * math.sin((timingsine + 0.5) * 4), -0.1 * math.sin((timingsine + 0.2) * 4)) * CFrame.fromEulerAngles(0.349 * math.sin((timingsine + 0.3) * 4), 1.571, 0)
+			lst = CFrame.new(-1, 0.01 * math.sin(timingsine * 4), 0) * CFrame.fromEulerAngles(0, -2.094, -2.269 - 0.035 * math.sin((timingsine + 0.4) * 4))
+			return rt, nt, rst, lst, rht, lht, 16
+		end,
+		run = function(timingsine, rt, nt, rst, lst, rht, lht)
+			lht = CFrame.new(-1, -0.95 - 0.05 * math.sin((timingsine + 0.5) * 4), 0.1 * math.sin((timingsine + 0.2) * 4)) * CFrame.fromEulerAngles(-1.047 * math.sin((timingsine + 0.3) * 4), -1.571, 0)
+			nt = CFrame.new(-0.05 * math.sin(timingsine * 4), 1, -0.05) * CFrame.fromEulerAngles(-1.658, -0.035 * math.sin((timingsine - 0.5) * 4), 3.142 - 0.087 * math.sin(timingsine * 4))
+			rst = CFrame.new(1, 0.4 - 0.05 * math.sin((timingsine + 0.25) * 8), 0.5) * CFrame.fromEulerAngles(0, 2.094 - 0.087 * math.sin(timingsine * 4), -1.047 + 0.087 * math.sin((timingsine + 0.25) * 8))
+			rt = CFrame.new(0, -0.1 + 0.1 * math.sin(timingsine * 8), 0) * CFrame.fromEulerAngles(-1.571, 0.017 * math.sin((timingsine + 0.5) * 4), 3.142 + 0.087 * math.sin(timingsine * 4))
+			rht = CFrame.new(1, -0.95 + 0.05 * math.sin((timingsine + 0.5) * 4), -0.1 * math.sin((timingsine + 0.2) * 4)) * CFrame.fromEulerAngles(1.047 * math.sin((timingsine + 0.3) * 4), 1.571, 0)
+			lst = CFrame.new(-1, 0.4 - 0.05 * math.sin((timingsine + 0.25) * 8), 0.5) * CFrame.fromEulerAngles(0, -2.094 - 0.087 * math.sin(timingsine * 4), 1.047 - 0.087 * math.sin((timingsine + 0.25) * 8))
+			return rt, nt, rst, lst, rht, lht, 16
+		end,
+		punch = function(timingsine, rt, nt, rst, lst, rht, lht)
+			timingsine -= math.pi / 2
+			rst = CFrame.new(1, 0.25 + 0.25 * math.sin((timingsine - 0.5) * 1), -0.1 - 0.5 * math.sin((timingsine - 0.5) * 1)) * CFrame.fromEulerAngles(0, 1.571 + 0.524 * math.sin((timingsine - 0.5) * 1), 1.571 + 0.349 * math.sin((timingsine - 0.5) * 1))
+			lst = CFrame.new(-0.7 - 0.3 * math.sin((timingsine - 0.5) * 1), 0.7, -0.2 + 0.5 * math.sin((timingsine - 0.5) * 1)) * CFrame.fromEulerAngles(0, -1.571 + 0.785 * math.sin((timingsine - 0.5) * 1), -1.571)
+			nt = CFrame.new(0, 1, 0) * CFrame.fromEulerAngles(-1.571 - 0.262 * math.sin(timingsine * 1), 0, 2.793 - 0.96 * math.sin(timingsine * 1))
+			rt = CFrame.fromEulerAngles(-1.658 + 0.175 * math.sin(timingsine * 1), 0, 3.491 + 0.96 * math.sin(timingsine * 1))
+			return rt, nt, rst, lst, rht, lht, 16
+		end,
+		kick = function(timingsine, rt, nt, rst, lst, rht, lht)
+			timingsine -= math.pi / 2
+			rht = CFrame.new(1, -1, -0.2 * math.sin((timingsine + 0.8) * 1)) * CFrame.fromEulerAngles(0.175 * math.sin(timingsine * 1), 1.222 + 0.175 * math.sin(timingsine * 1), 1.571 * math.sin((timingsine + 0.8) * 1))
+			rst = CFrame.new(1, 0, 0.2) * CFrame.fromEulerAngles(-1.571 - 0.175 * math.sin((timingsine - 0.4) * 1), 0.785, 1.571 + 0.349 * math.sin((timingsine - 0.4) * 1))
+			rt = CFrame.fromEulerAngles(-1.396 + 0.175 * math.sin(timingsine * 1), 0, 3.142 + 1.047 * math.sin(timingsine * 1))
+			lst = CFrame.new(-1, 0, -0.2 - 0.4 * math.sin((timingsine - 0.4) * 1)) * CFrame.fromEulerAngles(-1.571 - 0.524 * math.sin((timingsine - 0.4) * 1), -0.785, -2.094 - 0.698 * math.sin((timingsine - 0.4) * 1))
+			lht = CFrame.new(-1 - 0.05 * math.sin(timingsine * 2), -1.1 + 0.1 * math.sin(timingsine * 1), -0.5 * math.sin(timingsine * 1)) * CFrame.fromEulerAngles(-0.175 * math.sin(timingsine * 1), -1.396 - 0.524 * math.sin(timingsine * 1), 0)
+			nt = CFrame.new(0, 1, 0) * CFrame.fromEulerAngles(-1.745 - 0.175 * math.sin(timingsine * 1), 0, 3.142 - 1.047 * math.sin(timingsine * 1))
+			return rt, nt, rst, lst, rht, lht, 16
+		end,
+		gidle = function(timingsine, rt, nt, rst, lst, rht, lht)
+			lht = CFrame.new(-1.1, -1.1 - 0.08 * math.sin((timingsine + 1.6) * 1), -0.05 * math.sin(timingsine * 1)) * CFrame.fromEulerAngles(-0.017 * math.sin(timingsine * 1), -1.047, -0.349)
+			nt = CFrame.new(0, 1.02 + 0.05 * math.sin(timingsine * 1), 0) * CFrame.fromEulerAngles(-1.658 + 0.035 * math.sin(timingsine * 1), 0, 3.491)
+			rst = CFrame.new(1, 0.1 * math.sin(timingsine * 1), 0) * CFrame.fromEulerAngles(1.745, 1.396, 0.873 - 0.035 * math.sin((timingsine + 1.6) * 1))
+			rt = CFrame.new(0, -0.1 + 0.1 * math.sin((timingsine + 1.6) * 1), 0.1 * math.sin(timingsine * 1)) * CFrame.fromEulerAngles(-1.484 + 0.035 * math.sin(timingsine * 1), 0, 2.793)
+			rht = CFrame.new(1.1, -1 - 0.08 * math.sin((timingsine + 1.6) * 1), -0.05 * math.sin(timingsine * 1)) * CFrame.fromEulerAngles(0.175 - 0.017 * math.sin(timingsine * 1), 1.745, -0.524)
+			lst = CFrame.new(-1, 0.3 + 0.1 * math.sin(timingsine * 1), 0.5) * CFrame.fromEulerAngles(-0.087 * math.sin(timingsine * 1), -2.094, 0.785 - 0.087 * math.sin((timingsine + 1.6) * 1))
+			return rt, nt, rst, lst, rht, lht, 16
+		end,
+		gwalk = function(timingsine, rt, nt, rst, lst, rht, lht)
+			lst = CFrame.new(-1, 0.3 + 0.01 * math.sin(timingsine * 8), 0.5 + 0.1 * math.sin(timingsine * 4)) * CFrame.fromEulerAngles(-0.087 * math.sin(timingsine * 1), -2.094, 0.785 - 0.035 * math.sin((timingsine - 0.5) * 8))
+			lht = CFrame.new(-1, -0.95 - 0.05 * math.sin((timingsine + 0.5) * 4), 0.1 * math.sin((timingsine + 0.2) * 4)) * CFrame.fromEulerAngles(-0.349 * math.sin((timingsine + 0.3) * 4), -1.571, 0)
+			rht = CFrame.new(1, -0.95 + 0.05 * math.sin((timingsine + 0.5) * 4), -0.1 * math.sin((timingsine + 0.2) * 4)) * CFrame.fromEulerAngles(0.349 * math.sin((timingsine + 0.3) * 4), 1.571, 0)
+			nt = CFrame.new(-0.05 * math.sin(timingsine * 4), 1, 0) * CFrame.fromEulerAngles(-1.658, -0.035 * math.sin((timingsine - 0.5) * 4), 3.142 - 0.087 * math.sin(timingsine * 4))
+			rst = CFrame.new(1, 0.1 * math.sin(timingsine * 1), 0) * CFrame.fromEulerAngles(1.745, 1.396 + 0.035 * math.sin(timingsine * 4), 0.873 - 0.035 * math.sin((timingsine + 0.5) * 4))
+			rt = CFrame.new(0, -0.1 + 0.05 * math.sin(timingsine * 8), 0) * CFrame.fromEulerAngles(-1.571, 0.017 * math.sin((timingsine + 0.5) * 4), 3.142 + 0.087 * math.sin(timingsine * 4))
+			return rt, nt, rst, lst, rht, lht, 16
+		end,
+		holster = function(timingsine, rt, nt, rst, lst, rht, lht)
+			lst = CFrame.new(-1, 0.3, 0.5) * CFrame.fromEulerAngles(0, -1.745, -0.785)
+			nt = CFrame.new(0, 1, 0) * CFrame.fromEulerAngles(-1.658, 0, 3.491)
+			rst = CFrame.new(1.1, 0.5, 0) * CFrame.fromEulerAngles(-0.95, 2.1, 1.1)
+			return rt, nt, rst, lst, rht, lht, 16
+		end,
+		unholster = function(timingsine, rt, nt, rst, lst, rht, lht)
+			lst = CFrame.new(-1, 0.3, 0.5) * CFrame.fromEulerAngles(0, -1.745, -0.785)
+			nt = CFrame.new(0, 1, 0) * CFrame.fromEulerAngles(-1.658, 0, 3.491)
+			rst = CFrame.new(1, 0.5, -0.5) * CFrame.fromEulerAngles(0, 1.9, 1.5)
+			return rt, nt, rst, lst, rht, lht, 16
+		end,
+		shoot = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = CFrame.fromEulerAngles(-1.571, 0, 3.578 + 0.087 * math.sin(timingsine * 1))
+			rst = CFrame.new(1, 0.45 + 0.05 * math.sin(timingsine * 1), -0.3 - 0.1 * math.sin(timingsine * 1)) * CFrame.fromEulerAngles(0, 1.222 - 0.175 * math.sin(timingsine * 1), 1.658 - 0.087 * math.sin(timingsine * 1))
+			lst = CFrame.new(-1, 0.5, 0) * CFrame.fromEulerAngles(0, -1.571, 0)
+			nt = CFrame.new(0, 1, 0) * CFrame.fromEulerAngles(-1.571, 0, 2.705 - 0.087 * math.sin(timingsine * 1))
+			return rt, nt, rst, lst, rht, lht, 16
+		end,
+		fly = function(timingsine, rt, nt, rst, lst, rht, lht)
+			nt = CFrame.new(0, 1, 0) * CFrame.fromEulerAngles(-1.571, 0, 3.142)
+			rht = CFrame.new(1, -1, 0.1) * CFrame.fromEulerAngles(0.175, 1.396, -0.175)
+			lst = CFrame.new(-1, 0.4, 0) * CFrame.fromEulerAngles(0.175, -1.222, 0.524)
+			lht = CFrame.new(-1, -1, 0.1) * CFrame.fromEulerAngles(0.175, -1.396, 0.175)
+			rst = CFrame.new(1, 0.4, 0) * CFrame.fromEulerAngles(0.175, 1.222, -0.524)
+			rt = CFrame.fromEulerAngles(-1.571, 0, 3.142)
+			return rt, nt, rst, lst, rht, lht, 16
+		end,
+		fall = function(timingsine, rt, nt, rst, lst, rht, lht)
+			if m.ParkourAnims then
+				nt = CFrame.new(0, 1, 0) * CFrame.fromEulerAngles(-1.92, 0, 3.142 - 0.175 * math.sin(timingsine * 8))
+				rht = CFrame.new(1, -1, 0.2) * CFrame.fromEulerAngles(0.349 * math.sin(timingsine * 8), 1.222 + 0.349 * math.sin((timingsine - 1) * 8), 0.175 + 0.349 * math.sin(timingsine * 8))
+				lst = CFrame.new(-1, 0.4, 0) * CFrame.fromEulerAngles(0, -0.785 + 0.698 * math.sin(timingsine * 8), -1.571 + 0.698 * math.sin((timingsine + 0.125) * 8))
+				lht = CFrame.new(-1, -1, 0.2) * CFrame.fromEulerAngles(-0.349 * math.sin(timingsine * 8), -1.222 + 0.349 * math.sin((timingsine - 1) * 8), -0.175 + 0.349 * math.sin(timingsine * 8))
+				rst = CFrame.new(1, 0.4, 0) * CFrame.fromEulerAngles(0, 0.785 + 0.698 * math.sin(timingsine * 8), 1.571 + 0.698 * math.sin((timingsine + 0.125) * 8))
+				rt = CFrame.fromEulerAngles(-1.396, 0.052 * math.sin(timingsine * 8), 3.142 + 0.175 * math.sin(timingsine * 8))
+			else
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * cos20) * CFrame.Angles(math.rad(24), 0, 0)
+				nt = NCF * CFrame.Angles(math.rad(12.5 * sin30), 0, 0)
+				rst = CFrame.new(1, -1 - 0.1 * cos20, -0.3) * RHCF * CFrame.Angles(math.rad(-3.5), 0, 0)
+				lst = CFrame.new(-1, -0.8 - 0.1 * cos20, -0.3) * LHCF * CFrame.Angles(math.rad(-3.5), 0, 0)
+				rht = CFrame.new(1.5, 0.5 + 0.02 * sin20, 0) * CFrame.Angles(math.rad(65), math.rad(-0.6), math.rad(45 + 4.5 * sin20))
+				lht = CFrame.new(-1.5, 0.5 + 0.02 * sin20, 0) * CFrame.Angles(math.rad(55), math.rad(-0.6), math.rad(-45 - 4.5 * sin20))
+			end
+			return rt, nt, rst, lst, rht, lht, 16
+		end,
+	}
+	local function CreatePart(cf, size, color, material, transp, reflec)
+		local rng = Instance.new("Part", workspace)
+		rng.Anchored = true
+		rng.CanCollide = false
+		rng.CanTouch = false
+		rng.CanQuery = false
+		rng.CastShadow = false
+		rng.Name = RandomString()
+		rng.Material = material or "Neon"
+		rng.Color = color or Color3.new(1, 0, 0)
+		rng.Size = size
+		rng.Transparency = transp or 0
+		rng.Reflectance = reflec or 0
+		rng.TopSurface = 0
+		rng.BottomSurface = 0
+		rng.CFrame = cf
+		return rng
+	end
+	local function MagicSphere(size, ticks, cf, color, grow)
+		local part = CreatePart(cf, Vector3.one, color)
+		local mesh = Instance.new("SpecialMesh", part)
+		mesh.MeshType = "Sphere"
+		mesh.Scale = size
+		mesh.Offset = Vector3.zero
+		task.spawn(function()
+			local elapsed = 0
+			local lifetime = ticks / 60
+			while elapsed < lifetime do
+				local dt = task.wait()
+				elapsed += dt
+				mesh.Scale = size + grow * elapsed * 60
+				part.Transparency = elapsed / lifetime
+			end
+			part:Destroy()
+		end)
+	end
+	local function MeleeEffect(targets)
+		for _,v in targets do
+			CreateSound(v, "140626490819228")
+			MagicSphere(Vector3.one, 30, v.CFrame, Color3.new(1, 0, 0), Vector3.one * 0.15)
+		end
+	end
+	local PrimaryMelee_index = 1
+	local PrimaryMelee_lastatk = 0
+	local function PrimaryMelee()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		if os.clock() - PrimaryMelee_lastatk > 1 then
+			PrimaryMelee_index = 0
+		end
+		PrimaryMelee_lastatk = os.clock()
+		local lol = PrimaryMelee_index
+		PrimaryMelee_index = (PrimaryMelee_index + 1) % 3
+		task.spawn(function()
+			if lol == 0 then
+				CreateSound("133409185965864")
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
+					rt, nt, rst, lst, rht, lht = lerps.punch(0, rt, nt, rst, lst, rht, lht)
+					return rt, nt, rst, lst, rht, lht, 30
+				end
+				task.wait(0.1)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+				CreateSound("140309071002261")
+				local start = timingsine
+				local seconds = 0.2
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
+					local c = (1 - ((1 - math.min((timingsine - start) / seconds, 1)) ^ 2)) * math.pi
+					rt, nt, rst, lst, rht, lht = lerps.punch(c, rt, nt, rst, lst, rht, lht)
+					return rt, nt, rst, lst, rht, lht, 30
+				end
+				task.wait(seconds / 2)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+				MeleeEffect(Attack(rootu.CFrame * CFrame.new(-0.5 * scale, 0, -3 * scale), Vector3.new(4, 4, 5) * scale))
+				task.wait(seconds / 2 + 0.1)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+			end
+			if lol == 1 then
+				CreateSound("127208366965459")
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
+					rt, nt, rst, lst, rht, lht = lerps.punch(math.pi, rt, nt, rst, lst, rht, lht)
+					return rt, nt, rst, lst, rht, lht, 30
+				end
+				task.wait(0.1)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+				CreateSound("140309071002261")
+				local start = timingsine
+				local seconds = 0.2
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
+					local c = (1 - ((1 - math.min((timingsine - start) / seconds, 1)) ^ 2)) * math.pi + math.pi
+					rt, nt, rst, lst, rht, lht = lerps.punch(c, rt, nt, rst, lst, rht, lht)
+					return rt, nt, rst, lst, rht, lht, 30
+				end
+				task.wait(seconds / 2)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+				MeleeEffect(Attack(rootu.CFrame * CFrame.new(0.5 * scale, 0, -3 * scale), Vector3.new(4, 4, 5) * scale))
+				task.wait(seconds / 2 + 0.1)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+			end
+			if lol == 2 then
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
+					rt, nt, rst, lst, rht, lht = lerps.kick(0, rt, nt, rst, lst, rht, lht)
+					return rt, nt, rst, lst, rht, lht, 30
+				end
+				task.wait(0.1)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+				CreateSound("137298186656357", 0.7)
+				local start = timingsine
+				local seconds = 0.2
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
+					local c = math.min((timingsine - start) / seconds, 1) * math.pi
+					rt, nt, rst, lst, rht, lht = lerps.kick(c, rt, nt, rst, lst, rht, lht)
+					return rt, nt, rst, lst, rht, lht, 20
+				end
+				task.wait(seconds / 2)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+				MeleeEffect(Attack(rootu.CFrame * CFrame.new(0, 0, -3 * scale), Vector3.new(6, 5, 5) * scale))
+				task.wait(seconds / 2 + 0.2)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+			end
+			animationOverride = nil
+			attacking = false
+		end)
+	end
+	local function PrimaryRanged()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		task.spawn(function()
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
+				rt, nt, rst, lst, rht, lht = lerps.shoot(math.pi / 2, rt, nt, rst, lst, rht, lht)
+				AimTowards(MouseHit())
+				return rt, nt, rst, lst, rht, lht, 20
+			end
+			task.wait(0.1)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			CreateSound("156572165")
+			CreateSound("130679953063646")
+			local target = MouseHit()
+			local hole = root.CFrame * CFrame.new(Vector3.new(1, 0.5, -5) * scale)
+			hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+			local raycast = PhysicsRaycast(hole.Position, target - hole.Position)
+			if raycast then
+				target = raycast.Position
+			end
+			SetBulletState(hole.Position, target)
+			Attack(CFrame.lookAt((hole.Position + target) / 2, target), Vector3.new(3, 3, (target - hole.Position).Magnitude))
+			MagicSphere(Vector3.zero, 20, hole, Color3.new(1, 1, 0), Vector3.one * 0.3)
+			MagicSphere(Vector3.zero, 20, CFrame.new(target), Color3.new(1, 1, 0), Vector3.one * 0.3)
+			MagicSphere(Vector3.new(0, 0, (target - hole.Position).Magnitude), 10, CFrame.lookAt((hole.Position + target) / 2, target), Color3.new(1, 1, 0), Vector3.new(0.2, 0.2, 0))
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
+				rt, nt, rst, lst, rht, lht = lerps.shoot(-math.pi / 2, rt, nt, rst, lst, rht, lht)
+				AimTowards(target)
+				return rt, nt, rst, lst, rht, lht, 20
+			end
+			task.wait(0.1)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			animationOverride = nil
+			attacking = false
+		end)
+	end
+	local function SwitchMode()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		task.spawn(function()
+			if hasgun then
+				CreateSound("83796427261186") -- shotgun holster sound idc
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
+					rt, nt, rst, lst, rht, lht = lerps.holster(0, rt, nt, rst, lst, rht, lht)
+					return rt, nt, rst, lst, rht, lht, 16
+				end
+				task.wait(0.2)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+				hasgun = false
+			else
+				CreateSound("83796427261186")
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
+					rt, nt, rst, lst, rht, lht = lerps.holster(0, rt, nt, rst, lst, rht, lht)
+					return rt, nt, rst, lst, rht, lht, 16
+				end
+				task.wait(0.2)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+				hasgun = true
+				gunspin = true
+				CreateSound("129433638565138")
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
+					rt, nt, rst, lst, rht, lht = lerps.unholster(0, rt, nt, rst, lst, rht, lht)
+					return rt, nt, rst, lst, rht, lht, 6
+				end
+				task.wait(0.6)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+				gunspin = false
+			end
+			animationOverride = nil
+		end)
+	end
+	m.Init = function(figure)
+		start = os.clock()
+		timingsine = 0
+		walkspeed = 16
+		attacking = false
+		hasgun = false
+		lastfly = false
+		PrimaryMelee_index = 0
+		animationOverride = nil
+		SetOverrideMovesetMusic(AssetGetContentId("BanisherTheme.mp3"), "DM DOKURO - GUARDIAN OF THE FORMER SEAS", 1)
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		gun = {
+			Group = "Gun",
+			Limb = "Right Arm",
+			Offset = CFrame.identity
+		}
+		bullet = {
+			Group = "Bullet",
+			CFrame = CFrame.identity
+		}
+		table.insert(HatReanimator.HatCFrameOverride, gun)
+		table.insert(HatReanimator.HatCFrameOverride, bullet)
+		ContextActions:BindAction("Uhhhhhh_BSShoot", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				if hasgun then
+					PrimaryRanged()
+				else
+					PrimaryMelee()
+				end
+			end
+		end, true, Enum.UserInputType.MouseButton1)
+		ContextActions:SetTitle("Uhhhhhh_BSShoot", "M1")
+		ContextActions:SetPosition("Uhhhhhh_BSShoot", UDim2.new(1, -130, 1, -130))
+		ContextActions:BindAction("Uhhhhhh_BSHolst", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				SwitchMode()
+			end
+		end, true, Enum.KeyCode.F)
+		ContextActions:SetTitle("Uhhhhhh_BSHolst", "T")
+		ContextActions:SetPosition("Uhhhhhh_BSHolst", UDim2.new(1, -130, 1, -180))
+		ContextActions:BindAction("Uhhhhhh_BSRun", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				if walkspeed == 16 then
+					walkspeed = 28
+				else
+					walkspeed = 16
+				end
+			end
+		end, true, Enum.KeyCode.LeftControl)
+		ContextActions:SetTitle("Uhhhhhh_BSRun", "Run")
+		ContextActions:SetPosition("Uhhhhhh_BSRun", UDim2.new(1, -180, 1, -130))
+		task.delay(0, notify, "u want a piece of me or smth ??")
+		if chatconn then
+			chatconn:Disconnect()
+		end
+		chatconn = OnPlayerChatted.Event:Connect(function(plr, msg)
+			if plr == Player then
+				notify(msg)
+			end
+		end)
+		flysound = Instance.new("Sound", torso)
+		flysound.SoundId = "rbxassetid://128719938523077"
+		flysound.Looped = true
+		flysound.Pitch = 1
+		flysound.Volume = 0
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock() - start
+		scale = figure:GetScale()
+		isdancing = not not figure:GetAttribute("IsDancing")
+		rcp.FilterDescendantsInstances = {figure, Player.Character}
+		
+		-- get vii
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		
+		if attacking then
+			hum.WalkSpeed = 8 * scale
+			hum.JumpPower = 0
+		else
+			hum.WalkSpeed = walkspeed * scale
+			hum.JumpPower = 50 * scale
+			if hum.Jump then
+				flysound.Volume = math.min(1, flysound.Volume + dt * 4)
+				root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
+				MagicSphere(Vector3.one * scale, 10, root.CFrame * CFrame.new(-0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(-0.1, -0.1, 0.2) * scale)
+				MagicSphere(Vector3.one * scale, 10, root.CFrame * CFrame.new(0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(-0.1, -0.1, 0.2) * scale)
+			else
+				flysound.Volume = math.max(0, flysound.Volume - dt * 4)
+			end
+			flysound.Playing = flysound.Volume > 0.05
+			if lastfly ~= hum.Jump then
+				lastfly = hum.Jump
+				if lastfly then
+					CreateSound("123619882242196")
+					MagicSphere(Vector3.zero, 5, root.CFrame * CFrame.new(-0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(0.5, 0.5, 0.1) * scale)
+					MagicSphere(Vector3.zero, 5, root.CFrame * CFrame.new(0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(0.5, 0.5, 0.1) * scale)
+				else
+					CreateSound("128788885488982")
+				end
+			end
+		end
+		
+		-- joints
+		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
+		
+		timingsine += dt
+		local onground = hum:GetState() == Enum.HumanoidStateType.Running
+		
+		-- animations
+		local torsovelocity = root.Velocity.Magnitude / scale
+		local torsovelocityy = root.Velocity.Y / scale
+		local torsorvelocityy = root.RotVelocity.Y
+		local animationspeed = 8
+		local walkval = torsovelocity / 10
+		walktime += dt * walkval
+		walktime %= 2 * math.pi
+		local fallval = math.min(math.abs(torsovelocityy) / 50, 1.3)
+		falltime += dt * fallval
+		falltime %= 2 * math.pi
+		local rw = root.CFrame.RightVector:Dot(root.Velocity) / scale
+		local lw = root.CFrame.LookVector:Dot(root.Velocity) / scale
+		if onground then
+			if torsovelocity < 1 then
+				if hasgun then
+					rt, nt, rst, lst, rht, lht, animationspeed = lerps.gidle(timingsine, rt, nt, rst, lst, rht, lht)
+				else
+					rt, nt, rst, lst, rht, lht, animationspeed = lerps.idle(timingsine, rt, nt, rst, lst, rht, lht)
+				end
+			elseif torsovelocity < 20 then
+				if hasgun then
+					rt, nt, rst, lst, rht, lht, animationspeed = lerps.gwalk(walktime, rt, nt, rst, lst, rht, lht)
+				else
+					rt, nt, rst, lst, rht, lht, animationspeed = lerps.walk(walktime, rt, nt, rst, lst, rht, lht)
+				end
+			else
+				rt, nt, rst, lst, rht, lht, animationspeed = lerps.run(walktime, rt, nt, rst, lst, rht, lht)
+			end
+		else
+			if hum.Jump then
+				rt, nt, rst, lst, rht, lht, animationspeed = lerps.fly(timingsine, rt, nt, rst, lst, rht, lht)
+			else
+				rt, nt, rst, lst, rht, lht, animationspeed = lerps.fall(falltime, rt, nt, rst, lst, rht, lht)
+				rt = CFrame.lookAt(Vector3.zero, Vector3.new(0, torsovelocityy, -100)) * rt
+			end
+		end
+		rt = CFrame.Angles(lw * -0.01, 0, rw * -0.01) * rt
+		if animationOverride then
+			rt, nt, rst, lst, rht, lht, animationspeed = animationOverride(timingsine, rt, nt, rst, lst, rht, lht)
+		end
+		
+		-- joints
+		local rj = root:FindFirstChild("RootJoint")
+		local nj = torso:FindFirstChild("Neck")
+		local rsj = torso:FindFirstChild("Right Shoulder")
+		local lsj = torso:FindFirstChild("Left Shoulder")
+		local rhj = torso:FindFirstChild("Right Hip")
+		local lhj = torso:FindFirstChild("Left Hip")
+		
+		-- interpolation
+		local alpha = math.exp(-animationspeed * dt)
+		joints.r = rt:Lerp(joints.r, alpha)
+		joints.n = nt:Lerp(joints.n, alpha)
+		joints.rs = rst:Lerp(joints.rs, alpha)
+		joints.ls = lst:Lerp(joints.ls, alpha)
+		joints.rh = rht:Lerp(joints.rh, alpha)
+		joints.lh = lht:Lerp(joints.lh, alpha)
+		
+		-- apply transforms
+		SetC0C1Joint(rj, joints.r, CFrame.new(0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0), scale)
+		SetC0C1Joint(nj, joints.n, CFrame.new(0, -0.5, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0), scale)
+		SetC0C1Joint(rsj, joints.rs, CFrame.new(-0.5, 0.5, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+		SetC0C1Joint(lsj, joints.ls, CFrame.new(0.5, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		SetC0C1Joint(rhj, joints.rh, CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+		SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		
+		-- gun
+		if m.UseSword then
+			gun.Group = "Sword"
+		else
+			gun.Group = "Gun"
+		end
+		if gunspin then
+			gun.Offset = CFrame.new(0, -1, -0.5) * CFrame.Angles(0, 0, (t * 50) % (2 * math.pi)) * CFrame.Angles(0.8, math.pi / 2, 0) * CFrame.Angles(math.rad(180), math.rad(180), 0)
+		else
+			gun.Offset = CFrame.new(0, -1, -0.5) * CFrame.Angles(math.rad(180), math.rad(180), 0)
+		end
+		gun.Disable = (not not isdancing) or not hasgun
+		
+		-- bullet
+		if bulletstate[3] < os.clock() - 0.5 then
+			bullet.CFrame = root.CFrame + Vector3.new(0, -12 * scale, 0)
+		else
+			local pos = (os.clock() // 0.05) % 2
+			if pos == 0 then
+				bullet.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + bulletstate[1]
+			else
+				bullet.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + bulletstate[2]
+			end
+		end
+	end
+	m.Destroy = function(figure: Model?)
+		ContextActions:UnbindAction("Uhhhhhh_BSShoot")
+		ContextActions:UnbindAction("Uhhhhhh_BSHolst")
+		ContextActions:UnbindAction("Uhhhhhh_BSRun")
+		root, torso, hum = nil, nil, nil
+	end
+	return m
+end)
+
 return modules
