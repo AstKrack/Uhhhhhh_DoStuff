@@ -7039,10 +7039,9 @@ AddModule(function()
 	end
 	local function BootsEffect(part, typ)
 		local COL = Color3.new(1, 0.5, 0)
-		local ra = 8
 		local inf = part.CFrame:VectorToObjectSpace(part.Velocity / 60) * 0.9
-		local ground = PhysicsRaycast(part.CFrame * Vector3.new(0, -0.9 * scale, 0), part.CFrame.UpVector * -ra)
-		local dist = ground and (ground.Distance / ra) or 1
+		local ground = PhysicsRaycast(part.CFrame * Vector3.new(0, -0.9 * scale, 0), part.CFrame.UpVector * -16)
+		local dist = ground and math.min(ground.Distance / 8, 1) or 1
 		if typ == "IGNITION" then
 			MagicSphere(
 				Vector3.zero, 5, part.CFrame * CFrame.new(0, -1 * scale, 0), COL,
@@ -7058,10 +7057,11 @@ AddModule(function()
 			)
 		end
 		if ground then
+			local dist = ground.Distance / 16
 			MagicSphere(
 				Vector3.new(0, 0, 0.05) * scale, 20, CFrame.lookAlong(ground.Position, ground.Normal), Color3.new(1, 1, 1),
 				Vector3.new(1, 1, 0):Lerp(Vector3.new(0.2, 0.2, 0), math.pow(dist, 3)) * scale,
-				Vector3.new(0, 0, 0), dist * 0.3 + 0.7
+				Vector3.new(0, 0, 0), dist * 0.05 + 0.95
 			)
 		end
 	end
