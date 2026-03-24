@@ -7059,8 +7059,8 @@ AddModule(function()
 		if ground then
 			MagicSphere(
 				Vector3.new(0, 0, 0.05) * scale, 20, CFrame.lookAlong(ground.Position, ground.Normal), Color3.new(1, 1, 1),
-				Vector3.new(1, 1, 0):Lerp(Vector3.new(0, 0, 0), dist) * scale,
-				Vector3.new(0, 0, 0), dist * 0.3 + 0.7
+				Vector3.new(1, 1, 0):Lerp(Vector3.new(0.2, 0.2, 0), math.pow(dist, 3)) * scale,
+				Vector3.new(0, 0, 0), dist * 0.1 + 0.9
 			)
 		end
 	end
