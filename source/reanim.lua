@@ -8366,7 +8366,38 @@ task.spawn(function()
 	end)
 end)
 task.wait()
+local InitLogsPage = UI.CreatePage()
+InitLogsPage.ZIndex = 1
+InitLogsPage.Position = UDim2.new(0.5, 360, 0.5, 0)
+InitLogsPage.Interactable = false
+InitLogsPage.Visible = false
+UI.CreateButton(MainPage, "Init Logs", 15).Activated:Connect(function()
+	InitLogsPage.Interactable = false
+	InitLogsPage.Visible = true
+	MainPage.Interactable = false
+	local tween = TweenService:Create(InitLogsPage, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {
+		Position = UDim2.new(0.5, 0, 0.5, 0),
+	})
+	tween:Play()
+	tween.Completed:Connect(function()
+		InitLogsPage.Interactable = true
+	end)
+end)
+UI.CreateButton(InitLogsPage, "&lt; Hurry back", 20).Activated:Connect(function()
+	InitLogsPage.Interactable = false
+	MainPage.Interactable = false
+	local tween = TweenService:Create(InitLogsPage, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.5, 360, 0.5, 0),
+	})
+	tween:Play()
+	tween.Completed:Connect(function()
+		MainPage.Interactable = true
+		InitLogsPage.Visible = false
+	end)
+end)
+local InitLogsText = UI.CreateText(InitLogsPage, "Loading...", 12, Enum.TextXAlignment.Left)
 local function getgithubraw(path)
+	InitLogsText.Text ..= "\n[LOG] [GitGET] GET api./" .. path
 	local s, resp = pcall(request, {
 		Method = "GET",
 		Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/content/" .. path,
@@ -8377,6 +8408,12 @@ local function getgithubraw(path)
 	if s and resp and resp.StatusCode == 200 then
 		return resp.Body
 	end
+	if resp then
+		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET api./" .. path .. " " .. resp.StatusCode
+	else
+		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET api./" .. path .. " NIL"
+	end
+	InitLogsText.Text ..= "\n[LOG] [GitGET] GET raw./" .. path
 	s, resp = pcall(request, {
 		Method = "GET",
 		Url = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/contents/content/" .. path,
@@ -8384,12 +8421,19 @@ local function getgithubraw(path)
 	if s and resp and resp.StatusCode == 200 then
 		return resp.Body
 	end
+	if resp then
+		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET raw./" .. path .. " " .. resp.StatusCode
+	else
+		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET raw./" .. path .. " NIL"
+	end
 	return nil
 end
 local function ForceModuleReload(force)
 	IsUhhhhhhFullyLoaded = false
+	InitLogsText.Text = "Init Logs -- This is where you check what happened."
 	ClearModules()
-	Util.Notify("Checking SHA1 Hashes...")
+	Util.Notify("Loading...")
+	InitLogsText.Text ..= "\n[LOG] Checking SHA1 hashes..."
 	local filesofbuiltins = {"v_moveset1.lua", "v_moveset2.lua", "v_moveset3.lua", "v_dance1.lua", "v_dance2.lua", "d_limbmap.lua", "d_hatsmap.lua"}
 	local filesofbuiltins_m = {"v_moveset1.lua", "v_moveset2.lua", "v_moveset3.lua", "v_dance1.lua", "v_dance2.lua"}
 	local filesofbuiltins_d = {"d_limbmap.lua", "d_hatsmap.lua"}
@@ -8409,11 +8453,13 @@ local function ForceModuleReload(force)
 							if table.find(filesofbuiltins, file.name) then
 								local path = "UhhhhhhReanim/BuiltinModules/" .. file.name
 								if isfile(path) then
+									InitLogsText.Text ..= "\n[LOG] BuiltinModules/" .. file.name .. " has been updated on the repo."
 									delfile(path)
 								end
 							else
 								local path = AssetGetPathFromFilename(file.name)
 								if isfile(path) then
+									InitLogsText.Text ..= "\n[LOG] Downloaded Asset " .. file.name .. " removed because outdated."
 									delfile(path)
 								end
 							end
@@ -8422,32 +8468,36 @@ local function ForceModuleReload(force)
 				end
 			end
 		end
+		InitLogsText.Text ..= "\n[LOG] Checked all SHA1 hashes..."
 	end, function()
-		Util.Notify("Failed to check for SHA1 hashes...")
+		InitLogsText.Text ..= "\n[ERROR] SHA1 hashes check failed!"
 	end)
 	local wasold = false
 	if SaveData.VanillaModuleCache then
 		wasold = true
 		SaveData.VanillaModuleCache = nil
 	end
-	Util.Notify("Loading maps...")
+	InitLogsText.Text ..= "\n[LOG] Loading maps..."
 	for _,x in filesofbuiltins_d do
 		local path = "UhhhhhhReanim/BuiltinModules/" .. x
 		local exist = false
 		local s, a = pcall(isfile, path)
 		if s and a then exist = true end
 		if force then exist = false end
-		if not exist then
+		if exist then
+			InitLogsText.Text ..= "\n[LOG] " .. x .. " already downloaded :D"
+		else
+			InitLogsText.Text ..= "\n[LOG] Downloading MAP" .. x .. "..."
 			local content = getgithubraw(x)
 			if content then
 				pcall(writefile, path, content)
 			else
-				Util.Notify("Failed to load " .. x .. ": Download failed.")
+				InitLogsText.Text ..= "\n[ERROR] Failed to load MAP " .. x .. ": Download failed."
 				SaveData.ContentHash[x] = nil
 			end
 		end
 	end
-	Util.Notify("Loading builtin modules...")
+	InitLogsText.Text ..= "\n[LOG] Loading builtin (also called vanilla) modules..."
 	for _,x in filesofbuiltins_m do
 		local path = "UhhhhhhReanim/BuiltinModules/" .. x
 		local exist = false
@@ -8457,19 +8507,22 @@ local function ForceModuleReload(force)
 		if force then exist = false end
 		local data = ""
 		if exist then
+			InitLogsText.Text ..= "\n[LOG] Reading local VANILLA " .. x .. "..."
 			data = readfile(path)
 			task.wait()
 		else
+			InitLogsText.Text ..= "\n[LOG] Downloading VANILLA " .. x .. "..."
 			local content = getgithubraw(x)
 			if content then
 				pcall(writefile, path, content)
 				data = content
 			else
-				Util.Notify("Failed to load " .. x .. ": Download failed.")
+				InitLogsText.Text ..= "\n[ERROR] Failed to load VANILLA " .. x .. ": Download failed."
 				SaveData.ContentHash[x] = nil
 			end
 		end
 		task.wait()
+		InitLogsText.Text ..= "\n[LOG] Loadstringing VANILLA " .. x .. "..."
 		xpcall(function()
 			local func, comperr = loadstring(data, "Uhhhhhh :: VANILLA " .. x)
 			if func then
@@ -8478,30 +8531,34 @@ local function ForceModuleReload(force)
 				error("COMPILE FAILED: " .. comperr)
 			end
 		end, function(msg)
-			warn(debug.traceback("VANILLA " .. x .. ": " .. msg))
-			Util.Notify("Failed to load " .. x .. ", see console.")
+			InitLogsText.Text ..= "\n[ERROR] Failed to load VANILLA " .. x .. ": See traceback below."
+			InitLogsText.Text ..= "\n[ERROR] " .. table.concat(string.split(debug.traceback("VANILLA " .. x .. ": " .. msg), "\n"), "\n[ERROR] ")
 		end)
 	end
-	-- user
-	Util.Notify("Loading user modules...")
+	InitLogsText.Text ..= "\n[LOG] Loading user modules..."
 	for _,path in listfiles("UhhhhhhReanim/Modules/") do
 		if isfile(path) then
-			--Util.Notify("User: " .. path:sub(23))
+			local x = path:sub(23)
 			xpcall(function()
-				local func, comperr = loadstring(readfile(path), "Uhhhhhh :: " .. path:sub(23))
+				InitLogsText.Text ..= "\n[LOG] Reading local USER " .. x .. "..."
+				local data = readfile(path)
+				InitLogsText.Text ..= "\n[LOG] Loadstringing USER " .. x .. "..."
+				local func, comperr = loadstring(data, "Uhhhhhh :: " .. x)
 				if func then
 					AddModules(func())
 				elseif comperr then
 					error("COMPILE FAILED: " .. comperr)
 				end
 			end, function(msg)
-				warn(debug.traceback(path .. ": " .. msg))
-				Util.Notify("Failed to load " .. path:sub(23) .. ", see console.")
+				InitLogsText.Text ..= "\n[ERROR] Failed to load USER " .. x .. ": See traceback below."
+				InitLogsText.Text ..= "\n[ERROR] " .. table.concat(string.split(debug.traceback("USER " .. x .. ": " .. msg), "\n"), "\n[ERROR] ")
 			end)
 		end
 	end
+	InitLogsText.Text ..= "\n[LOG] Refreshing Dance keybinds..."
 	RefreshKeybinds()
-	Util.Notify("Init complete")
+	InitLogsText.Text ..= "\n[LOG] Init complete!"
+	Util.Notify("Init complete" .. (InitLogsText.Text:find("ERROR") and ", there may be errors" or ""))
 	IsUhhhhhhFullyLoaded = true
 end
 UI.CreateSeparator(MainPage)
