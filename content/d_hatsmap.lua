@@ -1,8 +1,8 @@
 -- Uhhhhhh's hat map
 
---[[
+--[[ colon pls read this
 
-Sin dragon hats found in v_movesets2.lua (colon read this) (not in particular order)
+Sin dragon hats found in v_movesets2.lua (not in particular order)
 14864581977
 14125168816
 14500805111
@@ -11,6 +11,41 @@ Sin dragon hats found in v_movesets2.lua (colon read this) (not in particular or
 95768703732477
 14124334543
 13455287601
+111793953309477, 113048125789248, 117186631495734, 132770514241770 <-- this a full set btw
+10239227497
+10239245976
+14120501243
+109987071363341
+
+skipped because they fit anyway (and i dont do sin dragon wings)
+132906536668549
+14928245825
+13935777037
+128043557298261
+3302590751
+
+skipped because i have no idea
+71409823493730
+
+skipped because banned
+80003050650393
+
+skipped because itll be used later
+14959586922 -- add part throw move x as option
+
+these are invalid, colon. dont ever list these
+637528, 878120
+
+this is a GAME.
+14133411956
+
+and lastly, colon, these are discord emojis.
+1413510991538294844
+1423328680150831314
+1456702872967184558
+1316022179204300820
+1478752184572317811
+1429870014181146745
 
 ]]
 
@@ -98,6 +133,14 @@ local HatMeshDatabase = {
 	{MeshId = "76010149115685", TextureId = "", Offset = CFrame.identity, For = "RightLeg"},
 	{MeshId = "126825022897778", TextureId = "", Offset = CFrame.identity, For = "Torso"},
 	{MeshId = "138744606849121", TextureId = "83207562332062", Offset = CFrame.Angles(0, 0, 1.57), For = "ArmLeg"},
+
+	-- User Rig Requests
+	-- prosthetic rig: 139102413583361, 121830551276315, 99726531005445, 18989526470, 74295684215899
+	{MeshId = "117554824897780", TextureId = "", Offset = CFrame.Angles(0, 3.14, 0), For = "RightArm"},
+	{MeshId = "123388937940630", TextureId = "", Offset = CFrame.Angles(0, 3.14, 0), For = "LeftArm"},
+	{MeshId = "136378854630150", TextureId = "", Offset = CFrame.Angles(0, 3.14, 0), For = "RightArm"},
+	{MeshId = "18989397242", TextureId = "", Offset = CFrame.Angles(0, 3.14, 0), For = "LeftArm"},
+	{MeshId = "119861389229755", TextureId = "", Offset = CFrame.identity, For = "Torso"},
 }
 local HatNameDatabase = {
 	{Match = "Accessory (LARM)", Offset = CFrame.Angles(0, 0, 1.57), For = "LeftArm"},
@@ -356,6 +399,24 @@ local HatKnownAccessoriesDatabase = {
 			GunAttachment = CFrame.new(1.76228, -2.30232, 0, 0, 0.5, 0.866026, 0, -0.866026, 0.5, 1, 0, 0),
 		}
 	},
+	{ -- 15489773780
+		MeshId = "15489673737", TextureId = "",
+		C0 = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(50)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -1, 0),
+		C1 = CFrame.new(-0.75, -0.5, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(2.5, 0.5, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0),
+		}
+	},
+	{ -- 78440434447503
+		MeshId = "123846958006279", TextureId = "",
+		C0 = CFrame.new(0, 0, 0.4) * CFrame.Angles(0, 0, math.rad(40)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -1, 0),
+		C1 = CFrame.new(-0.404778, -0.695232, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(3.13571, 0.22408, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0),
+		}
+	},
 
 	-- Pistols
 	{ -- 15034807966
@@ -421,6 +482,26 @@ local HatKnownAccessoriesDatabase = {
 		C0 = CFrame.new(0, -24, 0),
 		C1 = CFrame.new(0, 0, 0),
 		Limb = "HumanoidRootPart", Group = "GunAura"
+	},
+	{ -- 6909069901
+		MeshId = "94891594182553", TextureId = "",
+		C0 = CFrame.new(0, -24, 0),
+		C1 = CFrame.new(0, 0, 0),
+		Limb = "HumanoidRootPart", Group = "GunAura"
+	},
+
+	-- Separated Wings
+	{ -- 5505301521
+		MeshId = "5486588848", TextureId = "",
+		C0 = CFrame.new(-0.15, 0, 0),
+		C1 = CFrame.new(-1.75, -1, 0, -1, 0, 0, 0, 1, 0, 0, 0, -1),
+		Limb = "Torso", Group = "LeftWing"
+	},
+	{ -- 5593848751
+		MeshId = "5593756557", TextureId = "",
+		C0 = CFrame.new(0.15, 0, 0),
+		C1 = CFrame.new(1.75, -1, 0, -1, 0, 0, 0, 1, 0, 0, 0, -1),
+		Limb = "Torso", Group = "RightWing"
 	},
 }
 
