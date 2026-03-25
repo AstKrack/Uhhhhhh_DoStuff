@@ -8503,7 +8503,7 @@ local function ForceModuleReload(force)
 		if exist then
 			InitLogsText.Text ..= "\n[LOG] " .. x .. " already downloaded :D"
 		else
-			InitLogsText.Text ..= "\n[LOG] Downloading MAP" .. x .. "..."
+			InitLogsText.Text ..= "\n[LOG] Downloading MAP " .. x .. "..."
 			local content = getgithubraw(x)
 			if content then
 				pcall(writefile, path, content)
