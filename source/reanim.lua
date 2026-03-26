@@ -4176,6 +4176,7 @@ function LimbReanimator.Start()
 		FakeToolHandle.Transparency = 1
 		FakeToolHandle.Color = Color3.new(0, 0, 1)
 		FakeToolHandle.CanCollide = false
+		FakeToolHandle.Massless = true
 		FakeToolHandle.Parent = FakeTool
 		FakeTool.Parent = Reanimate.Character
 		local RightGrip = Instance.new("Weld")
@@ -6375,6 +6376,7 @@ function HatReanimator.Start()
 						FakeToolHandle.Transparency = 1
 						FakeToolHandle.Color = Color3.new(0, 0, 1)
 						FakeToolHandle.CanCollide = false
+						FakeToolHandle.Massless = true
 						FakeToolHandle.Parent = FakeTool
 						FakeTool.Parent = ReanimCharacter
 						local RightGrip = Instance.new("Weld")
