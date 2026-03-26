@@ -1541,17 +1541,17 @@ AddModule(function()
 				end
 				local i1 = lol("TextLabel", -25, txt)
 				i1.TextXAlignment = "Right"
-				local val = lol("TextBox", -25, "")
+				local val = lol("TextBox", 25, "")
 				val.PlaceholderText = "0"
 				local this = function(mmhm)
 					if mmhm == "mmhm" then
-						k.Text = sig(animatorcfg[a])
+						val.Text = sig(animatorcfg[a])
 					end
-					if #k.Text > 0 then
-						animatorcfg[a] = tonumber(k.Text) or animatorcfg[a]
+					if #val.Text > 0 then
+						animatorcfg[a] = tonumber(val.Text) or animatorcfg[a]
 					end
-					if k:IsFocused() then return end
-					k.Text = sig(animatorcfg[a])
+					if val:IsFocused() then return end
+					val.Text = sig(animatorcfg[a])
 				end
 				this()
 				val.Changed:Connect(this)
