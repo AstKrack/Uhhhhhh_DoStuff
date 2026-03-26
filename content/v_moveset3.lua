@@ -1446,18 +1446,20 @@ AddModule(function()
 				local exp = x:split("e")
 				x = exp[1]
 				local dec = x:split(".")
-				if #dec == 1 then
-					return x .. "e" .. exp[2]
+				if #dec > 1 then
+					x = dec[1]
+					dec = dec[2]:sub(1, 3)
+					while dec:sub(-1, -1) == "0" do
+						dec = dec:sub(1, -2)
+					end
+					if #dec > 0 then
+						x ..= "." .. dec
+					end
 				end
-				x = dec[1]
-				dec = dec[2]:sub(1, 3)
-				while dec:sub(-1, -1) == "0" do
-					dec = dec:sub(1, -2)
+				if #exp > 1 then
+					x ..= "e" .. exp[2]
 				end
-				if #dec > 0 then
-					x ..= "." .. dec
-				end
-				return x .. "e" .. exp[2]
+				return x
 			end
 			local lmao = function(k, t, i, mmhm)
 				if mmhm == "mmhm" then
@@ -1551,7 +1553,7 @@ AddModule(function()
 						animatorcfg[a] = tonumber(val.Text) or animatorcfg[a]
 					end
 					if val:IsFocused() then return end
-					val.Text = sig(animatorcfg[a])
+					val1.Text = sig(animatorcfg[a])
 				end
 				this()
 				val.Changed:Connect(this)
