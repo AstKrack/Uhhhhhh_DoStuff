@@ -1643,6 +1643,8 @@ AddModule(function()
 			end
 			prop1("Lerp Speed", "speed")
 			prop1("Time Change", "change")
+			--lbl("      Value    Sin Value   Sin Speed   Sin Offset")
+			lbl("      Value    Sin Value   Sin Speed   Sin Offset")
 			prop2("Torso", "RootJoint")
 			prop2("Head", "Neck")
 			prop2("Left Arm", "LeftShoulder")
