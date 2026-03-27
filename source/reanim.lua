@@ -3093,6 +3093,7 @@ SaveData.NetlessVelocity = SaveData.NetlessVelocity or 25.01
 SaveData.UsePatchmaLikeNetless = not not SaveData.UsePatchmaLikeNetless
 SaveData.UseAngularVelocity = not not SaveData.UseAngularVelocity
 SaveData.PatchmaVoidFloat = not not SaveData.PatchmaVoidFloat
+SaveData.PlaceholderTransparency = SaveData.PlaceholderTransparency or 0.5
 
 -- empyrean-like thing
 local _G_Uhhhhhh = {}
@@ -3123,6 +3124,7 @@ local Reanimate = {
 	PatchmaVoidFloat = SaveData.PatchmaVoidFloat,
 	AntiExplosions = true,
 	CharacterScale = SaveData.CharacterScale,
+	PlaceholderTransparency = SaveData.PlaceholderTransparency,
 	P2PCollision = false,
 	ShiftlockEnabled = not SaveData.ShiftlockDisabled,
 	Shiftlocked = false,
@@ -4425,7 +4427,7 @@ function LimbReanimator.Start()
 			for _,v in ReanimCharacter:GetChildren() do
 				if v:IsA("BasePart") then
 					if table.find(LimbNames, v.Name) then
-						v.Transparency = ReanimOkay and 1 or 0.5
+						v.Transparency = ReanimOkay and 1 or Reanimate.PlaceholderTransparency
 					end
 				end
 			end
@@ -6626,7 +6628,7 @@ function HatReanimator.Start()
 				else
 					local tcf, _ = GetHatMappedCFrame(GetHatMappedOverride(ref.Map))
 					ph.CFrame = tcf
-					ph.Transparency = 0.625 + math.sin(t) * 0.125
+					ph.Transparency = 1 - (1 - Reanimate.PlaceholderTransparency) * (0.75 + math.sin(t) * 0.25)
 					table.insert(slocked, ph)
 				end
 			end
@@ -6807,6 +6809,13 @@ do
 		CharacterScaleSlider.Value = val
 		Reanimate.CharacterScale = val
 		SaveData.CharacterScale = val
+	end)
+	local PlaceholderTransparencySlider = UI.CreateSlider(MainPage, "Placeholders", Reanimate.PlaceholderTransparency, 0, 1, 0.05)
+	PlaceholderTransparencySlider.Changed:Connect(function(val)
+		val = math.clamp(val, 0, 1)
+		PlaceholderTransparencySlider.Value = val
+		Reanimate.PlaceholderTransparency = val
+		SaveData.PlaceholderTransparency = val
 	end)
 	UI.CreateSeparator(MainPage)
 	local function ReanimCharacterTeleport(pos)
