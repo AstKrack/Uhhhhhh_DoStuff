@@ -1746,7 +1746,7 @@ AddModule(function()
 							end
 						else
 							if t[2] == 0 then
-								return "0"
+								return sig(t[1] * mul)
 							else
 								if t[3] == 0 then
 									return sig(t[1] * mul)
@@ -1824,7 +1824,7 @@ AddModule(function()
 							end
 						else
 							if t[2] == 0 then
-								return "0"
+								return sig(t[1] * mul)
 							else
 								if t[3] == 0 then
 									return sig(t[1] * mul)
