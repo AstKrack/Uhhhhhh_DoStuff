@@ -5631,11 +5631,11 @@ function HatReanimator.Start()
 	}
 	HatCollideMethods[-1] = {
 		NoAnim = true,
-		Wait1 = 0.16,
+		Wait1 = 0.25,
 		Wait2 = 0,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
 			RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 141, 0))
-			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 30, 0), Vector3.zero
+			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.zero, Vector3.zero
 		end,
 		State1 = function() end,
 		State2 = function() return 0 end,
@@ -6008,7 +6008,7 @@ function HatReanimator.Start()
 				RootPosition = Vector3.new(root.Position.X, FallenPartsDestroyHeight, root.Position.Z)
 			end
 		end
-		if not workspace.StreamingEnabled and false then
+		if not workspace.StreamingEnabled then
 			local dir = CFrame.Angles(0, math.pi * 2 * math.random(), 0).LookVector * 300
 			while true do
 				local nearAPlayer = false
