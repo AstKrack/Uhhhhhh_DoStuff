@@ -7336,7 +7336,7 @@ AddModule(function()
 					SecondaryMelee_isrunning = false
 					return
 				end
-			until not SecondaryMelee_isrunning or os.clock() - s >= 5.5
+			until not SecondaryMelee_isrunning or os.clock() - s >= 5
 			if not SecondaryMelee_isrunning then
 				TweenService:Create(sound, TweenInfo.new(0.2, Enum.EasingStyle.Linear), {Volume = 0}):Play()
 				Debris:AddItem(sound, 0.2)
@@ -7432,10 +7432,10 @@ AddModule(function()
 						math.random() * math.pi * 2,
 						math.random() * math.pi * 2
 					).LookVector
-					MagicSphere(Vector3.new(1, 1, 3), 5, CFrame.lookAlong(bombo.Position, randomdir), Color3.new(1, 1, 0.7), Vector3.one * -0.2, Vector3.new(0, 0, -0.5))
+					MagicSphere(Vector3.new(2, 2, 6), 10, CFrame.lookAlong(bombo.Position, randomdir), Color3.new(1, 1, 0.7), Vector3.one * -0.4, Vector3.new(0, 0, -1))
 				end
-				MagicSphere(Vector3.one * 3, 5, bombo.CFrame, Color3.new(1, 0.8, 0.5), Vector3.one * -0.6)
-				MagicSphere(Vector3.one, 5, bombo.CFrame, Color3.new(1, 0.8, 0.5), Vector3.one * 0.6)
+				MagicSphere(Vector3.one * 6, 10, bombo.CFrame, Color3.new(1, 0.8, 0.5), Vector3.one * -0.6, 0.5)
+				MagicSphere(Vector3.one * 2, 20, bombo.CFrame, Color3.new(1, 0.8, 0.5), Vector3.one * 0.6, 0.1)
 				CreateSound(bombo, "102645835886909")
 				Debris:AddItem(bombo, 5)
 			end)
