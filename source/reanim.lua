@@ -1617,12 +1617,21 @@ function UI.CreatePage()
 	Frame.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	Frame.CanvasSize = UDim2.new(0, 0, 0, 0)
 	Frame.ScrollingDirection = Enum.ScrollingDirection.Y
-	Frame.ScrollBarThickness = 0
+	Frame.ScrollBarThickness = 3
+	Frame.ElasticBehavior = Enum.ElasticBehavior.Always
+	Frame.TopImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+	Frame.MidImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+	Frame.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+	Frame.ScrollBarImageTransparency = 0.5
+	Frame.ScrollBarImageColor3 = UITextColor.Value
 	Frame.ClipsDescendants = true
 	AddToRenderStep(function(t)
 		Frame.BorderColor3 = GetUIColor(t)
 		Frame.BackgroundColor3 = GetUIBGColor(t)
 	end, Frame)
+	Util.LinkDestroyI2C(Frame, UITextColor.Changed:Connect(function(val)
+		Frame.ScrollBarImageColor3 = val
+	end))
 	local Padding = Util.Instance("UIPadding", Frame)
 	Padding.PaddingTop = UDim.new(0, 5)
 	Padding.PaddingBottom = UDim.new(0, 0)
@@ -3147,11 +3156,11 @@ local Reanimate = {
 			if accum then
 				self.Input += Vector3.new(vec.X, vec.Y, 0)
 			else
-				self.Input = Vector3.new(vec.X, vec.Y, self.Input)
+				self.Input = Vector3.new(vec.X, vec.Y, self.Input.Z)
 			end
 		end,
 		OnZoomInput = function(self, zoom)
-			self.Input += Vector3.new(0, 0, zoom)
+			self.Input = Vector3.new(self.Input.X, self.Input.Z, zoom)
 		end,
 		Inputs = {
 			KB = {
@@ -3218,7 +3227,8 @@ end
 do
 	local function IsInThumbstickArea(pos)
 		local playerGui = Player:FindFirstChildOfClass("PlayerGui")
-		local touchGui = playerGui and playerGui:FindFirstChild("TouchGui")
+		if not playerGui then return end
+		local touchGui = playerGui:FindFirstChild("TouchGui")
 		if not touchGui or not touchGui.Enabled then
 			return false
 		end
@@ -3413,9 +3423,8 @@ do
 				end
 			end
 			if input.UserInputType == Enum.UserInputType.MouseWheel then
-				--if gpe then return end
-				local zoom = math.clamp(-input.Position.Z, -1, 1)
-				self:OnZoomInput(zoom)
+				if gpe then return end
+				self:OnZoomInput(-input.Position.Z)
 			end
 			if input.UserInputType == Enum.UserInputType.Touch then
 				if self.Inputs.TC.DJ == input then

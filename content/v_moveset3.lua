@@ -1641,11 +1641,42 @@ AddModule(function()
 			prop2("Left Leg", "LeftHip")
 			prop2("Right Leg", "RightHip")
 			txtbox("Load Save", "name,0,0,1,0,7,6,4,5...", function(val)
-				
+				val = string.split(val, ",")
+				local map = {
+					Torso = "RootJoint",
+					Head = "Neck",
+					RightArm = "RightShoulder",
+					LeftArm = "LeftShoulder",
+					RightLeg = "RightHip",
+					LeftLeg = "LeftHip",
+				}
+				local function getval()
+					return {
+						tonumber(table.remove(val, 1)) or 0,
+						tonumber(table.remove(val, 1)) or 0,
+						tonumber(table.remove(val, 1)) or 1,
+						tonumber(table.remove(val, 1)) or 0,
+					}
+				end
+				while #val >= 25 do
+					local n2 = table.remove(val, 1)
+					if map[n2] then
+						local t = animatorcfg[map[n2]]
+						t.x = getval()
+						t.y = getval()
+						t.z = getval()
+						t.rx = getval()
+						t.ry = getval()
+						t.rz = getval()
+					else
+						for _=1, 6 do getval() end
+					end
+				end
+				for _,v in update do v("mmhm") end
 			end)
 			btn("copy lerps to clipboard", function()
 				local MW_animatorProgressSave = {}
-				local function applyj(n)
+				local function applyj(n, n2)
 					local x = `{n}.C0=Lerp({n}.C0,`
 					local t = animatorcfg[n]
 					local zero = function(k)
@@ -1703,24 +1734,24 @@ AddModule(function()
 						x ..= `cf()`
 					end
 					x ..= ",deltaTime)"
-					table.insert(MW_animatorProgressSave, n)
+					table.insert(MW_animatorProgressSave, n2)
 					conv2("x") conv2("rx") conv2("y") conv2("ry") conv2("z") conv2("rz")
 					return x
 				end
 				local codegen = ""
-				codegen ..= applyj("RootJoint") .. "\n"
-				codegen ..= applyj("Neck") .. "\n"
-				codegen ..= applyj("RightShoulder") .. "\n"
-				codegen ..= applyj("LeftShoulder") .. "\n"
-				codegen ..= applyj("RightHip") .. "\n"
-				codegen ..= applyj("LeftHip") .. "\n"
+				codegen ..= applyj("RootJoint", "Torso") .. "\n"
+				codegen ..= applyj("Neck", "Head") .. "\n"
+				codegen ..= applyj("RightShoulder", "RightArm") .. "\n"
+				codegen ..= applyj("LeftShoulder", "LeftArm") .. "\n"
+				codegen ..= applyj("RightHip", "RightLeg") .. "\n"
+				codegen ..= applyj("LeftHip", "LeftLeg") .. "\n"
 				codegen ..= "--MW_animatorProgressSave: " .. table.concat(MW_animatorProgressSave, ",")
 				setclipboard(codegen)
 			end)
 			btn("copy steve lerps to clipboard", function()
 				local MW_animatorProgressSave = {}
-				local function applyj(n, n2)
-					local x = `{n2} = `
+				local function applyj(n, n2, n3)
+					local x = `{n3} = `
 					local t = animatorcfg[n]
 					local zero = function(k)
 						if t[k][1] == 0 then
@@ -1776,17 +1807,17 @@ AddModule(function()
 					else
 						x ..= `CFrame.identity`
 					end
-					table.insert(MW_animatorProgressSave, n)
+					table.insert(MW_animatorProgressSave, n2)
 					conv2("x") conv2("rx") conv2("y") conv2("ry") conv2("z") conv2("rz")
 					return x
 				end
 				local codegen = "animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)\n\t"
-				codegen ..= applyj("RootJoint", "rt") .. "\n\t"
-				codegen ..= applyj("Neck", "nt") .. "\n\t"
-				codegen ..= applyj("RightShoulder", "rst") .. "\n\t"
-				codegen ..= applyj("LeftShoulder", "lst") .. "\n\t"
-				codegen ..= applyj("RightHip", "rht") .. "\n\t"
-				codegen ..= applyj("LeftHip", "lht") .. "\n\treturn rt, nt, rst, lst, rht, lht, " .. sig(animatorcfg.speed) .. "\nend\n"
+				codegen ..= applyj("RootJoint", "Torso", "rt") .. "\n\t"
+				codegen ..= applyj("Neck", "Head", "nt") .. "\n\t"
+				codegen ..= applyj("RightShoulder", "RightArm", "rst") .. "\n\t"
+				codegen ..= applyj("LeftShoulder", "LeftArm", "lst") .. "\n\t"
+				codegen ..= applyj("RightHip", "RightLeg", "rht") .. "\n\t"
+				codegen ..= applyj("LeftHip", "LeftLeg", "lht") .. "\n\treturn rt, nt, rst, lst, rht, lht, " .. sig(animatorcfg.speed) .. "\nend\n"
 				codegen ..= "--MW_animatorProgressSave: " .. table.concat(MW_animatorProgressSave, ",")
 				setclipboard(codegen)
 			end)
