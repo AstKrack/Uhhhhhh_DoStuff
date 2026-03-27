@@ -1651,12 +1651,14 @@ AddModule(function()
 					LeftLeg = "LeftHip",
 				}
 				local function getval()
-					return {
+					local lol = {
+						tonumber(table.remove(val, 1)) or 0,
 						tonumber(table.remove(val, 1)) or 0,
 						tonumber(table.remove(val, 1)) or 0,
 						tonumber(table.remove(val, 1)) or 1,
-						tonumber(table.remove(val, 1)) or 0,
 					}
+					lol[4], lol[3] = lol[3], lol[4]
+					return lol
 				end
 				while #val >= 25 do
 					local n2 = table.remove(val, 1)
@@ -1722,7 +1724,10 @@ AddModule(function()
 						end
 					end
 					local conv2 = function(k)
-						for i=1, 4 do table.insert(MW_animatorProgressSave, sig(t[k][i])) end
+						table.insert(MW_animatorProgressSave, sig(t[k][1]))
+						table.insert(MW_animatorProgressSave, sig(t[k][2]))
+						table.insert(MW_animatorProgressSave, sig(t[k][4]))
+						table.insert(MW_animatorProgressSave, sig(t[k][3]))
 					end
 					if not (zero("x") and zero("y") and zero("z") and zero("rx") and zero("ry") and zero("rz")) then
 						x ..= `cfMul(cf({conv("x")},{conv("y")},{conv("z")}),angles({conv("rx", math.pi / 180)},{conv("ry", math.pi / 180)},{conv("rz", math.pi / 180)}))`
@@ -1796,7 +1801,10 @@ AddModule(function()
 						end
 					end
 					local conv2 = function(k)
-						for i=1, 4 do table.insert(MW_animatorProgressSave, sig(t[k][i])) end
+						table.insert(MW_animatorProgressSave, sig(t[k][1]))
+						table.insert(MW_animatorProgressSave, sig(t[k][2]))
+						table.insert(MW_animatorProgressSave, sig(t[k][4]))
+						table.insert(MW_animatorProgressSave, sig(t[k][3]))
 					end
 					if not (zero("x") and zero("y") and zero("z") and zero("rx") and zero("ry") and zero("rz")) then
 						x ..= `CFrame.new({conv("x")},{conv("y")},{conv("z")}) * CFrame.fromEulerAnglesXYZ({conv("rx", math.pi / 180)},{conv("ry", math.pi / 180)},{conv("rz", math.pi / 180)}))`
