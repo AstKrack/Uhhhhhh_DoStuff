@@ -6726,17 +6726,20 @@ AddModule(function()
 		if not m.Sounds then return end
 		if not torso then return end
 		local parent = torso
+		local volume = extra or 1
 		if typeof(id) == "Instance" then
 			parent = id
 			id, pitch = pitch, extra
+			volume = 1
 		end
 		pitch = pitch or 1
 		local sound = Instance.new("Sound")
 		sound.Name = tostring(id)
 		sound.SoundId = "rbxassetid://" .. id
-		sound.Volume = 1
+		sound.Volume = volume
 		sound.Pitch = pitch
 		sound.Parent = parent
+		sound.EmitterSize = 300
 		sound:Play()
 		sound.Ended:Connect(function()
 			sound:Destroy()
@@ -7047,7 +7050,7 @@ AddModule(function()
 	end
 	local function MeleeEffect(targets)
 		for _,v in targets do
-			CreateSound(v, "140626490819228")
+			CreateSound(v, "140626490819228", 1, 2)
 			MagicSphere(Vector3.one, 30, v.CFrame, Color3.new(1, 0, 0), Vector3.one * 0.15)
 		end
 	end
@@ -7070,6 +7073,20 @@ AddModule(function()
 				Vector3.one * scale, 10, part.CFrame * CFrame.new(0, -1 * scale, 0), COL,
 				Vector3.new(0.5 * thic, 0.1, 0.5 * thic):Lerp(Vector3.new(thic - 1.1, 0.025 * leng, thic - 1.1), dist) * scale,
 				Vector3.new(0, 0, 0):Lerp(Vector3.new(0, -0.05 * leng, 0), dist) * scale + inf
+			)
+		end
+		if typ == "IGNITION_" then
+			MagicSphere(
+				Vector3.zero, 5, part.CFrame * CFrame.new(0, -1 * scale, 0), COL,
+				Vector3.new(2, 0.1, 2):Lerp(Vector3.new(2, 0.05 * leng, 2), dist) * scale,
+				Vector3.new(0, 0, 0):Lerp(Vector3.new(0, -0.05 * leng, 0), dist) * scale
+			)
+		end
+		if typ == "THRUST_" then
+			MagicSphere(
+				Vector3.one * scale, 10, part.CFrame * CFrame.new(0, -1 * scale, 0), COL,
+				Vector3.new(0.5 * thic, 0.1, 0.5 * thic):Lerp(Vector3.new(thic - 1.1, 0.025 * leng, thic - 1.1), dist) * scale,
+				Vector3.new(0, 0, 0):Lerp(Vector3.new(0, -0.05 * leng, 0), dist) * scale
 			)
 		end
 		if ground then
@@ -7106,7 +7123,7 @@ AddModule(function()
 		PrimaryMelee_index = (PrimaryMelee_index + 1) % 3
 		task.spawn(function()
 			if lol == 0 then
-				CreateSound("133409185965864")
+				CreateSound("133409185965864", 1, 2)
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
 					rt, nt, rst, lst, rht, lht = lerps.punch(0, rt, nt, rst, lst, rht, lht)
 					return rt, nt, rst, lst, rht, lht, 30
@@ -7115,7 +7132,7 @@ AddModule(function()
 				if not rootu:IsDescendantOf(workspace) then
 					return
 				end
-				CreateSound("140309071002261")
+				CreateSound("140309071002261", 1, 2)
 				local start = timingsine
 				local seconds = 0.2
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
@@ -7134,7 +7151,7 @@ AddModule(function()
 				end
 			end
 			if lol == 1 then
-				CreateSound("127208366965459")
+				CreateSound("127208366965459", 1, 2)
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
 					rt, nt, rst, lst, rht, lht = lerps.punch(math.pi, rt, nt, rst, lst, rht, lht)
 					return rt, nt, rst, lst, rht, lht, 30
@@ -7143,7 +7160,7 @@ AddModule(function()
 				if not rootu:IsDescendantOf(workspace) then
 					return
 				end
-				CreateSound("140309071002261")
+				CreateSound("140309071002261", 1, 2)
 				local start = timingsine
 				local seconds = 0.2
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
@@ -7170,7 +7187,7 @@ AddModule(function()
 				if not rootu:IsDescendantOf(workspace) then
 					return
 				end
-				CreateSound("137298186656357", 0.7)
+				CreateSound("137298186656357", 0.7, 2)
 				local start = timingsine
 				local seconds = 0.2
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
@@ -7222,8 +7239,8 @@ AddModule(function()
 			if not rootu:IsDescendantOf(workspace) then
 				return
 			end
-			CreateSound("156572165")
-			CreateSound("130679953063646")
+			CreateSound("156572165", 1, 4)
+			CreateSound("130679953063646", 1, 4)
 			local target = MouseHit()
 			local hole = root.CFrame * CFrame.new(Vector3.new(1, 0.5, -5) * scale)
 			hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
@@ -7280,7 +7297,10 @@ AddModule(function()
 				rt, nt, rst, lst, rht, lht = lerps.flamethrow(timingsine, rt, nt, rst, lst, rht, lht)
 				return rt, nt, rst, lst, rht, lht, 4
 			end
-			CreateSound("118325610335607")
+			local sound = Instance.new("Sound", torso)
+			sound.SoundId = "rbxassetid://118325610335607"
+			sound.Volume = 10
+			sound.EmitterSize = 300
 			local s = os.clock()
 			repeat
 				task.wait()
@@ -7290,6 +7310,8 @@ AddModule(function()
 				end
 			until not SecondaryMelee_isrunning or os.clock() - s >= 0.75
 			if not SecondaryMelee_isrunning then
+				TweenService:Create(sound, TweenInfo.new(0.2, Enum.EasingStyle.Linear), {Volume = 0}):Play()
+				Debris:AddItem(sound, 0.2)
 				animationOverride = nil
 				attacking = false
 			end
@@ -7298,23 +7320,25 @@ AddModule(function()
 				return rt, nt, rst, lst, rht, lht, 30
 			end
 			if larm and rarm then
-				BootsEffect(larm, "IGNITION", 1.2, 16)
-				BootsEffect(rarm, "IGNITION", 1.2, 16)
+				BootsEffect(larm, "IGNITION_", 1.3, 16)
+				BootsEffect(rarm, "IGNITION_", 1.3, 16)
 			end
 			s = os.clock()
 			repeat
 				if larm and rarm then
-					BootsEffect(larm, "THRUST", 1.2, 16)
-					BootsEffect(rarm, "THRUST", 1.2, 16)
+					BootsEffect(larm, "THRUST_", 1.3, 16)
+					BootsEffect(rarm, "THRUST_", 1.3, 16)
 				end
-				Attack(rootu.CFrame * CFrame.new(0, 0, -5 * scale), Vector3.new(6, 5, 8) * scale)
+				Attack(rootu.CFrame * CFrame.new(0, 0.5, -5 * scale), Vector3.new(6, 3, 8) * scale)
 				task.wait()
 				if not rootu:IsDescendantOf(workspace) then
 					SecondaryMelee_isrunning = false
 					return
 				end
-			until not SecondaryMelee_isrunning or os.clock() - s >= 5.25
+			until not SecondaryMelee_isrunning or os.clock() - s >= 5.5
 			if not SecondaryMelee_isrunning then
+				TweenService:Create(sound, TweenInfo.new(0.2, Enum.EasingStyle.Linear), {Volume = 0}):Play()
+				Debris:AddItem(sound, 0.2)
 				animationOverride = nil
 				attacking = false
 			end
@@ -7323,6 +7347,104 @@ AddModule(function()
 		end)
 	end
 	local function SecondaryRanged()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		local larm = rootu.Parent:FindFirstChild("Left Arm")
+		if not larm then return end
+		attacking = true
+		PrimaryMelee_index = 0
+		if os.clock() - PrimaryMelee_lastatk > 1 then
+			randomdialog({
+				"Suppressing Threat...",
+				"Eliminating Target...",
+				"Target Locking On...",
+				"Executing Explosion Protocol...",
+				"Distanced Combat In Progress...",
+				"Bomb Thrown"
+			})
+		end
+		PrimaryMelee_lastatk = os.clock()
+		task.spawn(function()
+			local start = timingsine
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
+				rt, nt, rst, lst, rht, lht = lerps.shoot(timingsine - start, rt, nt, rst, lst, rht, lht)
+				AimTowards(MouseHit())
+				return rt, nt, rst, lst, rht, lht, 20
+			end
+			CreateSound("122106682283174", 1, 0.5)
+			CreateSound("137298186656357", 0.7, 2)
+			task.wait(0.3)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			local bombo = CreatePart(CFrame.identity, Vector3.one, Color3.new(1, 0, 0), "Plastic", 1, 0)
+			local s = os.clock()
+			repeat
+				bombo.CFrame = larm.CFrame * CFrame.new(0, -1.5, 0)
+				task.wait()
+				if not rootu:IsDescendantOf(workspace) then
+					bombo:Destroy()
+					return
+				end
+			until os.clock() - s >= 0.3
+			local target = MouseHit()
+			local speed = 100
+			local aim = target - bombo.Position
+			do
+				local gravity = workspace.Gravity
+				local xz = Vector3.new(aim.X, 0, aim.Z)
+				local x = xz.Magnitude
+				local y = aim.Y
+				local v2 = speed * speed
+				local v4 = v2 * v2
+				local root = v4 - gravity * (gravity * x * x + 2 * y * v2)
+				local angle = math.rad(45)
+				if root > 0 then
+					angle = math.min(math.atan((v2 - math.sqrt(root)) / (gravity * x)), math.rad(45))
+				end
+				aim = Vector3.new(0, math.sin(angle), 0) + xz.Unit * math.cos(angle)
+			end
+			bombo.CanCollide = true
+			bombo.Anchored = false
+			bombo.Velocity = aim.Unit * speed
+			task.spawn(function()
+				for _=1, 3 do
+					CreateSound(bombo, "107785733040651")
+					task.wait(0.5)
+				end
+				bombo.Material = "Neon"
+				for _=1, 5 do
+					CreateSound(bombo, "107785733040651")
+					task.wait(0.1)
+				end
+				bombo.CanCollide = false
+				bombo.Anchored = true
+				bombo.Transparency = 1
+				Attack(bombo.CFrame, Vector3.one * 10)
+				for _=1, 10 do
+					local randomdir = CFrame.Angles(
+						math.random() * math.pi * 2,
+						math.random() * math.pi * 2,
+						math.random() * math.pi * 2
+					).LookVector
+					MagicSphere(Vector3.new(1, 1, 3), 5, CFrame.lookAlong(bombo.Position, randomdir), Color3.new(1, 1, 0.7), Vector3.one * -0.2, Vector3.new(0, 0, -0.5))
+				end
+				MagicSphere(Vector3.one * 3, 5, bombo.CFrame, Color3.new(1, 0.8, 0.5), Vector3.one * -0.6)
+				MagicSphere(Vector3.one, 5, bombo.CFrame, Color3.new(1, 0.8, 0.5), Vector3.one * 0.6)
+				CreateSound(bombo, "102645835886909")
+				Debris:AddItem(bombo, 5)
+			end)
+			task.wait(0.2)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			animationOverride = nil
+			attacking = false
+		end)
 	end
 	local function SwitchMode()
 		if not m.IgnoreDancing then
@@ -7340,7 +7462,7 @@ AddModule(function()
 					"Ranged Protocol Disabled",
 					"Optimising For Close Combat...",
 				})
-				CreateSound("83796427261186") -- shotgun holster sound idc
+				CreateSound("83796427261186", 1, 5) -- shotgun holster sound idc
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
 					rt, nt, rst, lst, rht, lht = lerps.holster(0, rt, nt, rst, lst, rht, lht)
 					return rt, nt, rst, lst, rht, lht, 16
@@ -7351,7 +7473,7 @@ AddModule(function()
 				end
 				hasgun = false
 			else
-				CreateSound("83796427261186")
+				CreateSound("83796427261186", 1, 5)
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
 					rt, nt, rst, lst, rht, lht = lerps.holster(0, rt, nt, rst, lst, rht, lht)
 					return rt, nt, rst, lst, rht, lht, 16
@@ -7368,7 +7490,7 @@ AddModule(function()
 				})
 				hasgun = true
 				gunspin = true
-				CreateSound("129433638565138")
+				CreateSound("129433638565138", 1, 5)
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
 					rt, nt, rst, lst, rht, lht = lerps.unholster(0, rt, nt, rst, lst, rht, lht)
 					return rt, nt, rst, lst, rht, lht, 6
@@ -7481,6 +7603,7 @@ AddModule(function()
 		flysound.Looped = true
 		flysound.Pitch = 1
 		flysound.Volume = 0
+		flysound.EmitterSize = 300
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = os.clock() - start
