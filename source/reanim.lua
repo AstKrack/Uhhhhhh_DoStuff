@@ -3413,7 +3413,7 @@ do
 				end
 			end
 			if input.UserInputType == Enum.UserInputType.MouseWheel then
-				if gpe then return end
+				--if gpe then return end
 				local zoom = math.clamp(-input.Position.Z, -1, 1)
 				self:OnZoomInput(zoom)
 			end
@@ -3465,13 +3465,12 @@ do
 				self.Inputs.TC.Touch[input] = false
 			end
 		end)
-		-- causes issues for mac somehow
-		--[[UserInputService.PointerAction:Connect(function(wheel, pan, pinch, gpe)
+		UserInputService.PointerAction:Connect(function(wheel, pan, pinch, gpe)
 			if not gpe then
 				self:OnPanInput(pan * Vector2.new(1, 0.77) * math.rad(7), false)
 				self:OnZoomInput(-wheel - pinch)
 			end
-		end)]]
+		end)
 		local function resetInputDevices()
 			self.Inputs:Reset()
 		end
