@@ -8675,7 +8675,7 @@ AddModule(function()
 		end
 		
 		-- animations
-		timingsine += dt
+		timingsine += dt * 60
 		local torsovelocity = root.Velocity.Magnitude / scale
 		local torsovelocityy = root.Velocity.Y / scale
 		local animationFunc = nil
