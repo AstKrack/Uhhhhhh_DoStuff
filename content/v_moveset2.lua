@@ -8483,6 +8483,7 @@ AddModule(function()
 			if not rootu:IsDescendantOf(workspace) then
 				return
 			end
+			CreateForce(rootu, rootu.CFrame.LookVector * -20, 0.25)
 			local proj = CreatePart(CFrame.lookAt(rootu.CFrame * Vector3.new(0, 0, -6), MouseHit()), Vector3.new(1, 1, 4), Color3.new(0.05, 0.41, 0.67), "Plastic", 0, 0)
 			BulletReference = proj
 			CreateSound(proj, "31761785")
