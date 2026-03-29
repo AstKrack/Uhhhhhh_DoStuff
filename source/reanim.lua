@@ -21,7 +21,7 @@ Thou shalth not steal. Point at this source if you used a snippet here.
 if _G.UhhhhhhLoaded then return end
 _G.UhhhhhhLoaded = true
 
-local UhhhhhhVersion = "1.0.6 BETA"
+local UhhhhhhVersion = "1.0.9 BETA"
 
 local Debris = cloneref(game:GetService("Debris"))
 local CoreGui = cloneref(game:GetService("CoreGui"))
@@ -3719,7 +3719,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	end
 	RC:ScaleTo(Reanimate.CharacterScale)
 	local RCHumanoid, RCRootPart = RC.Humanoid, RC.HumanoidRootPart
-	local RCHead = RC.Head
+	local RCHead, RCTorso, RCRootJoint, RCNeck = RC.Head, RC.Torso, RCRootPart.RootJoint, RC.Torso.Neck
 	--[[local Anchor = Instance.new("Part", RCRootPart)
 	Anchor.Name = "i can take explosions >:3"
 	Anchor.Transparency = 1
@@ -3789,14 +3789,15 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		local _,x,_ = CamCF:ToEulerAngles(Enum.RotationOrder.YXZ)
 		local MoveCF = CFrame.Angles(0, x, 0)
 		pcall(sethiddenproperty, RCRootPart, "PhysicsRepRootPart", nil)
-		if Reanimate.CharacterScale ~= RC:GetScale() then
-			RC:ScaleTo(Reanimate.CharacterScale)
+		local scale = Reanimate.CharacterScale
+		if scale ~= RC:GetScale() then
+			RC:ScaleTo(scale)
 		end
 		local RCHumanoidState = RCHumanoid:GetState().Name
 		local gravaff = not not table.find(fallingStates, RCHumanoidState)
 		if gravaff then
 			if Reanimate.ScaleGravity and not RCRootPart:IsGrounded() then
-				RCRootPart.AssemblyLinearVelocity += Vector3.new(0, -workspace.Gravity * (Reanimate.CharacterScale - 1) * 0.25 * dt, 0)
+				RCRootPart.AssemblyLinearVelocity += Vector3.new(0, -workspace.Gravity * (scale - 1) * 0.25 * dt, 0)
 			end
 		end
 		if LastJump ~= CJump then
@@ -3809,9 +3810,16 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			end
 		end
 		LastJump = CJump
-		local TargetCameraOffset = (RCRootPart.CFrame * CFrame.new(0, 1.5, 0)):PointToObjectSpace(RCHead.Position)
+		local TargetCameraPosition = RCRootPart.CFrame * Vector3.new(0, 1.5 * scale, 0)
+		if RCRootJoint.Active then
+			TargetCameraPosition = RCTorso.CFrame * Vector3.new(0, 1.5 * scale, 0)
+			if RCNeck.Active then
+				TargetCameraPosition = RCHead.Position
+			end
+		end
+		local TargetCameraOffset = (RCRootPart.CFrame * CFrame.new(0, 1.5, 0)):PointToObjectSpace(TargetCameraPosition)
 		if not Reanimate.SmoothCam then
-			TargetCameraOffset = Vector3.new(0, -1.5, 0) + Vector3.new(0, 1.5, 0) * RC:GetScale()
+			TargetCameraOffset = Vector3.new(0, -1.5, 0) + Vector3.new(0, 1.5, 0) * scale
 		end
 		RCHumanoid.CameraOffset = TargetCameraOffset:Lerp(RCHumanoid.CameraOffset, math.exp(-9.8 * dt))
 		if RCHumanoidState == "Swimming" then
@@ -4983,6 +4991,20 @@ function HatReanimator.Start()
 			p.CanQuery = false
 			p.Transparency = 0.75
 			p.Name = "(C) Uhhhhhh V" .. UhhhhhhVersion .. " :: HAT PLACEHOLDER"
+			for _,v in p:GetDescendants() do
+				if v:IsA("LuaSourceContainer") then
+					v:Destroy()
+					continue
+				end
+				local exist = pcall(function()
+					return v.LocalTransparencyModifier
+				end)
+				if exist then
+					p:GetPropertyChangedSignal("Transparency"):Connect(function()
+						v.LocalTransparencyModifier = p.Transparency
+					end)
+				end
+			end
 			p.Parent = workspace
 			return p
 		end
@@ -6661,7 +6683,7 @@ function HatReanimator.Start()
 				else
 					local tcf, _ = GetHatMappedCFrame(GetHatMappedOverride(ref.Map))
 					ph.CFrame = tcf
-					ph.Transparency = 1 - (1 - Reanimate.PlaceholderTransparency) * (0.75 + math.sin(t) * 0.25)
+					ph.Transparency = 1 - (1 - Reanimate.PlaceholderTransparency) * (1 - ltm)
 					table.insert(slocked, ph)
 				end
 			end

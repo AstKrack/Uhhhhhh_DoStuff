@@ -1,4 +1,7 @@
 * Note: This does not include movesets and dances.
+# Version 1.0.9 BETA
+ - Prepare for overhaul...
+ - Fixed placeholders having special effects despite not being used.
 # Version 1.0.6 BETA
  - Renamed "RootPart in void" mode to "RootPart in very void"
  - Added "RootPart in void" which fixes floating point issues with the torso.
