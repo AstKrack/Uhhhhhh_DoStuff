@@ -602,6 +602,8 @@ AddModule(function()
 								anim.LeftKnee = CFrame.identity
 								anim.RightKnee = CFrame.identity
 							end
+						else
+							strength *= 0.25
 						end
 					end
 					StrengthSmoothing = strength + (StrengthSmoothing - strength) * math.exp(-16 * dt)
