@@ -680,7 +680,7 @@ AddModule(function()
 
 	m.Init = function(figure: Model)
 		m.Destroy(figure)
-		Ragdolls[m.Mode](figure)
+		Ragdolls[m.Mode + 1](figure)
 	end
 	m.Update = function(dt: number, figure: Model) end
 	m.Destroy = function(figure: Model?)
