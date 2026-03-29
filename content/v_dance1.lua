@@ -221,6 +221,7 @@ AddModule(function()
 			end
 		end,
 		function(figure)
+			-- badly written code warning!
 			local hum = figure:FindFirstChildOfClass("Humanoid")
 			if not hum then return end
 			local root = figure:FindFirstChild("HumanoidRootPart")
@@ -447,6 +448,8 @@ AddModule(function()
 					for _,v in Ragdoll:GetDescendants() do
 						if v:IsA("BasePart") then
 							v.CFrame = offset * rootcf:ToObjectSpace(v.CFrame)
+							v.Velocity = Vector3.new(0, 50, 0)
+							v.RotVelocity = Vector3.zero
 						end
 					end
 				end
@@ -617,8 +620,6 @@ AddModule(function()
 				Phoria.StepEvent = StepEvent
 				return Phoria, Model, Ragdoll
 			end
-
-			-- badly written code warning!
 
 			local he = figure:FindFirstChild("Head")
 			local la = figure:FindFirstChild("Left Arm")
