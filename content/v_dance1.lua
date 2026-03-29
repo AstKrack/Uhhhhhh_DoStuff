@@ -666,6 +666,7 @@ AddModule(function()
 			end)
 			
 			teleporthack = root:GetPropertyChangedSignal("CFrame"):Connect(function()
+				if (torso.Position - root.Position).Magnitude < 10 then return end
 				local cf = root.CFrame
 				Phoria.Teleport(cf)
 			end)
