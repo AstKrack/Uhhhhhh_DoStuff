@@ -235,6 +235,12 @@ AddModule(function()
 				Model.Name = "PhoriaModel"
 				local Ragdoll = Instance.new("Model")
 				Ragdoll.Name = "RagdollPhysics"
+				local customgravity = {}
+				local function _customgrav(part)
+					local f = Instance.new("Attachment", part)
+					f.Name = "Antigravity"
+					table.insert(customgravity, f)
+				end
 				local function _muscle(part1, part2, pivotcf, lup, llw, aup, alw)
 					local a0 = Instance.new("Attachment", part1)
 					a0.Name = "MuscleAttachment"
@@ -305,6 +311,7 @@ AddModule(function()
 					p0.Size = Vector3.one
 					p0.Transparency = 1
 					p0.Massless = true
+					_customgrav(p0)
 					local p1 = p0:Clone()
 					p1.Parent = part2
 					local j1, j1m = _muscle(part1, p0, pivotcf, unpack(angledata[1]))
@@ -338,10 +345,12 @@ AddModule(function()
 					upper.Name = "Upper"
 					upper.CFrame = cf * CFrame.new(0, size.Y / 4, 0)
 					upper.Size = Vector3.new(size.X, size.Y / 2, size.Z)
+					_customgrav(upper)
 					local lower = Instance.new("Part", limb)
 					lower.Name = "Lower"
 					lower.CFrame = cf * CFrame.new(0, -size.Y / 4, 0)
 					lower.Size = upper.Size
+					_customgrav(lower)
 					local jointm = _muscleball(upper, lower, cf, angledata)
 					return limb, jointm
 				end
@@ -349,6 +358,7 @@ AddModule(function()
 				head.Name = "Head"
 				head.CFrame = cframe * CFrame.new(0, 1.5, 0)
 				head.Size = Vector3.new(1, 1, 1)
+				_customgrav(head)
 				local torso, torsom = _limbin2parts("Torso", cframe, Vector3.new(2, 2, 1), {
 					{0, 0, -20, 45},
 					{0, 0, -35, 35},
@@ -599,6 +609,9 @@ AddModule(function()
 						cf = cf:Lerp(AnimSmoother[name], math.exp(-32 * dt))
 						AnimSmoother[name] = cf
 						muscles.SetCFrame(cf)
+					end
+					for _,f in customgravity do
+						f.Force = Vector3.new(0, f.Parent:GetMass() * (workspace.Gravity - 35), 0)
 					end
 				end)
 				Phoria.StepEvent = StepEvent
