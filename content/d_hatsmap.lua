@@ -20,6 +20,10 @@ Sin dragon hats found in v_movesets2.lua (not in particular order)
 8843572259
 8843579903
 
+Linked sword hats found in said file
+6685365462
+15925628459
+
 skipped because they fit anyway (and i dont do sin dragon wings)
 132906536668549
 14928245825
@@ -312,6 +316,15 @@ local HatKnownAccessoriesDatabase = {
 			SwordAttachment = CFrame.new(-4.02173, -3.37464, 0, 0, -0.766044, 0.642788, 0, -0.642788, -0.766044, 1, 0, 0),
 		}
 	},
+	{ -- 14775076647
+		MeshId = "14774841896", TextureId = "",
+		C0 = CFrame.new(1.20208192, -1.20208192, 0.55, 0, -0.707107008, -0.707107008, 0, 0.707107008, -0.707107008, 1, 0, 0),
+		C1 = CFrame.new(0, -1.7, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
+		Limb = "Torso", Group = "Sword",
+		Attachments = {
+			SwordAttachment = CFrame.new(0, 2.19592, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
+		}
+	},
 
 	-- Guns
 	{ -- 4623059912
@@ -420,6 +433,15 @@ local HatKnownAccessoriesDatabase = {
 		Limb = "Torso", Group = "Gun",
 		Attachments = {
 			GunAttachment = CFrame.new(3.13571, 0.22408, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0),
+		}
+	},
+	{ -- 7208661666
+		MeshId = "7203730183", TextureId = "",
+		C0 = CFrame.new(-0.560375, -0.0214996, -1, 0, -0.766044, 0.642788, 0, 0.642788, 0.766044, -1, 0, 0),
+		C1 = CFrame.new(-0.560375, -0.0214996, 0, 0, -0.766044, 0.642788, 0, 0.642788, 0.766044, -1, 0, 0),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(-1.54091, 2.19454, 0, 0, -0.766044, 0.642788, 0, 0.642788, 0.766044, -1, 0, 0),
 		}
 	},
 

@@ -31,9 +31,11 @@ local SINDRAGON_HATMAP_CLAWR = table.concat({
 }, "|")
 
 local LINKEDSWORD_HATMAP_BALL = table.concat({
+	"6504654865, 6504654926, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1",
 	"",
 }, "|")
 local LINKEDSWORD_HATMAP_BOMB = table.concat({
+	"15925622812, 15925622912, 0, -0.5, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1",
 	"",
 }, "|")
 
@@ -6660,6 +6662,7 @@ AddModule(function()
 	m.HitboxDebug = false
 	m.ParkourAnims = true
 	m.UseSword = false
+	m.CameraFly = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Tuff", m.Notifications).Changed:Connect(function(val)
 			m.Notifications = val
@@ -6679,6 +6682,9 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Fall Parkour Anim", m.ParkourAnims).Changed:Connect(function(val)
 			m.ParkourAnims = val
 		end)
+		Util_CreateSwitch(parent, "Camera Fly", m.CameraFly).Changed:Connect(function(val)
+			m.CameraFly = val
+		end)
 		Util_CreateSwitch(parent, "Use Sword instead of Gun", m.UseSword).Changed:Connect(function(val)
 			m.UseSword = val
 		end)
@@ -6691,6 +6697,7 @@ AddModule(function()
 		m.HitboxDebug = not not save.HitboxDebug
 		m.ParkourAnims = not save.MoreTuff
 		m.UseSword = not not save.UseSword
+		m.CameraFly = not not save.CameraFly
 	end
 	m.SaveConfig = function()
 		return {
@@ -6701,6 +6708,7 @@ AddModule(function()
 			HitboxDebug = m.HitboxDebug,
 			MoreTuff = not m.ParkourAnims,
 			UseSword = m.UseSword,
+			CameraFly = m.CameraFly,
 		}
 	end
 
@@ -7071,6 +7079,9 @@ AddModule(function()
 		local inf = part.CFrame:VectorToObjectSpace(part.Velocity / 60) * 0.9
 		local ground = PhysicsRaycast(part.CFrame * Vector3.new(0, -0.9 * scale, 0), part.CFrame.UpVector * -(8 + leng) * scale)
 		local dist = ground and math.min(ground.Distance / leng, 1) or 1
+		if inf.Y < 50 then
+			dist *= -50 / inf.Y
+		end
 		if typ == "IGNITION" then
 			MagicSphere(
 				Vector3.zero, 5, part.CFrame * CFrame.new(0, -1 * scale, 0), COL,
@@ -7682,8 +7693,22 @@ AddModule(function()
 			end
 			if gofly then
 				flysound.Volume = math.min(2, flysound.Volume + dt * 8)
-				hum.WalkSpeed = 112
-				root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
+				if m.CameraFly then
+					hum.PlatformStand = true
+					local dir = (ReanimCamera.CFrame.LookVector * 2 + hum.MoveDirection).Unit
+					hum.WalkSpeed = 0.001
+					local vel = root.Velocity
+					vel += Vector3.new(0, workspace.Gravity + 1, 0) * dt + dir * 49
+					local xz = vel * Vector3.new(1, 0, 1)
+					if xz.Magnitude > 112 then xz = xz.Unit * 112 end
+					root.Velocity = xz + Vector3.new(0, vel.Y, 0)
+					local a, b = root.CFrame:ToObjectSpace(CFrame.lookAlong(Vector3.zero, dir)):ToAxisAngle()
+					root.RotVelocity = a * b * 30
+				else
+					hum.PlatformStand = false
+					hum.WalkSpeed = 112 * scale
+					root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
+				end
 				BootsEffect(larm, "THRUST")
 				BootsEffect(rarm, "THRUST")
 			else
@@ -8530,9 +8555,9 @@ AddModule(function()
 		if not larm then return end
 		attacking = true
 		task.spawn(function()
-			CreateSound("11565378")
 			animationOverride = lerps.timebomb1
 			local proj = CreatePart(CFrame.identity, Vector3.one, Color3.new(0.1, 0.16, 0.2), "Plastic", 0, 0)
+			CreateSound(proj, "11565378")
 			local mesh = Instance.new("SpecialMesh", proj)
 			mesh.MeshType = "FileMesh"
 			mesh.MeshId = "rbxasset://fonts/timebomb.mesh"
