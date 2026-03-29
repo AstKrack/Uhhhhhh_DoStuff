@@ -618,7 +618,7 @@ AddModule(function()
 			Model.Parent = figure
 			Model:ScaleTo(figure:GetScale())
 			for _,v in Ragdoll:GetDescendants() do
-				if v:IsA("BasePart") then v.Transparency = 1 end
+				if v:IsA("BasePart") then v.Transparency = 0.5 end
 			end
 
 			local function createNoCollide(p0, p1)
@@ -674,6 +674,7 @@ AddModule(function()
 				root.Anchored, torso.Anchored, he.Anchored, la.Anchored, ra.Anchored, ll.Anchored, rl.Anchored = false, false, false, false, false, false, false
 				Phoria.StepEvent:Disconnect()
 				Model:Destroy()
+				step:Disconnect()
 			end
 		end,
 	}
