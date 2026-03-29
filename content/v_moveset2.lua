@@ -7079,7 +7079,7 @@ AddModule(function()
 		local inf = part.CFrame:VectorToObjectSpace(part.Velocity / 60) * 0.9
 		local ground = PhysicsRaycast(part.CFrame * Vector3.new(0, -0.9 * scale, 0), part.CFrame.UpVector * -(8 + leng) * scale)
 		local dist = ground and math.min(ground.Distance / leng, 1) or 1
-		if inf.Y < 50 then
+		if inf.Y < -50 then
 			dist *= -50 / inf.Y
 		end
 		if typ == "IGNITION" then
