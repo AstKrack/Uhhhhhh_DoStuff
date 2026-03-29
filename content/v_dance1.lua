@@ -656,7 +656,7 @@ AddModule(function()
 						end
 					end
 				end
-				he.CFrame = ragdoll.Head.CFrame
+				he.CFrame = Ragdoll.Head.CFrame
 				lerplimb(torso, Ragdoll.Torso, 0.5)
 				lerplimb(la, Ragdoll["Left Arm"], 0.8)
 				lerplimb(ra, Ragdoll["Right Arm"], 0.8)
@@ -684,7 +684,7 @@ AddModule(function()
 	end
 	m.Update = function(dt: number, figure: Model) end
 	m.Destroy = function(figure: Model?)
-		if cleanupeverything then cleanupeverything = cleanupeverything() and false or nil end
+		if cleanupeverything then cleanupeverything = cleanupeverything() end
 		if teleporthack then teleporthack:Disconnect() teleporthack = nil end
 		if not figure then return end
 		local hum = figure:FindFirstChild("Humanoid")
