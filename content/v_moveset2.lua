@@ -7689,6 +7689,7 @@ AddModule(function()
 					root.Velocity += Vector3.new(0, 50, 0)
 				else
 					CreateSound("128788885488982", 1, 0.5)
+					hum.PlatformStand = false
 				end
 			end
 			if gofly then
@@ -7703,9 +7704,8 @@ AddModule(function()
 					if xz.Magnitude > 112 then xz = xz.Unit * 112 end
 					root.Velocity = xz + Vector3.new(0, vel.Y, 0)
 					local a, b = root.CFrame:ToObjectSpace(CFrame.lookAlong(Vector3.zero, dir)):ToAxisAngle()
-					root.RotVelocity = a * b * 30
+					root.RotVelocity = a * b * 3
 				else
-					hum.PlatformStand = false
 					hum.WalkSpeed = 112 * scale
 					root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
 				end
