@@ -462,7 +462,7 @@ AddModule(function()
 				local RCP = RaycastParams.new()
 				RCP.RespectCanCollide = true
 				RCP.FilterType = Enum.RaycastFilterType.Exclude
-				RCP.FilterDescendantsInstances = {Model}
+				RCP.FilterDescendantsInstances = {figure}
 				local function Raycast(from, dir)
 					return workspace:Raycast(from, dir, RCP)
 				end
