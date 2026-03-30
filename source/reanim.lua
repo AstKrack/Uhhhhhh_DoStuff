@@ -3785,8 +3785,9 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	local noclipStates = {"Running", "Jumping", "Freefall", "Landed", "Climbing", "Swimming"}
 	local fallingStates = {"Jumping", "Freefall", "PlatformStanding", "Physics", "Ragdoll", "GettingUp", "Seated", "Flying", "FallingDown"}
 	local LastSafest = RCRootPart.CFrame
+	local CMove, CJump = Vector3.zero, false
 	Util.LinkDestroyI2C(RC, RunService.PreAnimation:Connect(function(dt)
-		local CMove, CJump = Reanimate.Control.Move, Reanimate.Control.Jump
+		CMove, CJump = Reanimate.Control.Move, Reanimate.Control.Jump
 		local CamCF = Reanimate.Camera.CFrame
 		local _,x,_ = CamCF:ToEulerAngles(Enum.RotationOrder.YXZ)
 		local MoveCF = CFrame.Angles(0, x, 0)
@@ -3846,6 +3847,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		end
 	end))
 	Util.LinkDestroyI2C(RC, RunService.PostSimulation:Connect(function(dt)
+		RCHumanoid.Jump = CJump
 		local tcf, pos = RCRootPart.CFrame.Rotation, RCRootPart.CFrame.Position
 		local RCHumanoidState = RCHumanoid:GetState().Name
 		local safe = true
@@ -7883,13 +7885,13 @@ local function ClearModules()
 end
 local function GetModuleHash(m)
 	if m.Hash then return m.Hash end
-	local str = m.Name .. ":3/:3" .. m.Description
+	local str = m.Name .. "somethingsomethingidkLOL:3:3:3:3" .. m.Description
 	str = buffer.fromstring(string.rep(str, 8))
-	local hash = {36, 91, 225, 10, 232, 117, 96, 243, 93, 128, 61, 97, 101, 120, 130, 69, 177, 80, 131, 27, 137, 242, 155, 245, 22, 123, 197, 145, 146, 206, 157, 20}
-	local off = buffer.readu8(str, 0) % 32
+	local hash = {36, 91, 225, 10, 232, 117, 96, 243, 93, 128, 61, 97, 101, 120, 130, 69, 177, 80, 131, 27, 137, 242, 155, 245, 22, 123, 197, 145, 146, 206, 157, 20, 36, 91, 225, 10, 232, 117, 96, 243, 93, 128, 61, 97, 101, 120, 130, 69, 177, 80, 131, 27, 137, 242, 155, 245, 22, 123, 197, 145, 146, 206, 157, 20}
+	local off = buffer.readu8(str, 0) % 64
 	local l = buffer.len(str)
 	for i=1, l do
-		local j = ((off + i) % 32) + 1
+		local j = ((off + i) % 64) + 1
 		hash[j] = bit32.bxor(hash[j], buffer.readu8(str, i - 1)) % 256
 	end
 	str = ""
