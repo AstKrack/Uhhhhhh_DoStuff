@@ -9357,7 +9357,7 @@ AddModule(function()
 		sword = {
 			Group = "Sword",
 			Limb = "Left Arm",
-			Offset = CFrame.new(0, -1, 0) * CFrame.Angles(-1.6, 0, -0.05)
+			Offset = CFrame.new(0, -1, 0) * CFrame.Angles(-1.53, 0, -0.05)
 		}
 		table.insert(HatReanimator.HatCFrameOverride, sword)
 		ContextActions:BindAction("Uhhhhhh_SSSword", function(_, state, _)
