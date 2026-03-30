@@ -9245,16 +9245,18 @@ AddModule(function()
 				if not rootu:IsDescendantOf(workspace) then
 					return
 				end
-				CreateSound("92597369", 0.7)
-				CreateSound("234365573", 0.7)
-				SwordAttack(0.16)
+				SwordAttack(0.32)
 				local start = timingsine
 				animationOverride = function(timingsine, ...)
 					return lerps.sword4(timingsine - start, ...)
 				end
-				task.wait(0.16)
-				if not rootu:IsDescendantOf(workspace) then
-					return
+				for _=1, 2 do
+					CreateSound("92597369", 0.7)
+					CreateSound("234365573", 0.7)
+					task.wait(0.16)
+					if not rootu:IsDescendantOf(workspace) then
+						return
+					end
 				end
 			end
 			if lol == 2 then
@@ -9444,7 +9446,7 @@ AddModule(function()
 		sword.Offset = joints.sw
 			* CFrame.new(-0.1, -1.63, -0.89, -1, 0, 0, 0, 0, -1, 0, -1, 0):Inverse()
 			* CFrame.new(0, -3.94, 2.94, 1, 0, 0, 0, 0, 1, 0, -1, 0):Inverse()
-			* CFrame.new(0, -4, 1.5) * CFrame.Angles(1.57, 0, 0)
+			* CFrame.new(0, -4, 1.5) * CFrame.Angles(1.5, 0, 0)
 		sword.Disable = not not isdancing
 	end
 	m.Destroy = function(figure: Model?)
