@@ -124,7 +124,7 @@ AddModule(function()
 			createNoCollide(root, lhj.Part1)
 
 			local step = RunService.Heartbeat:Connect(function()
-				hum.PlatformStand = true
+				hum.EvaluateStateMachine = false
 				if hum.MoveDirection.Magnitude > 0 or hum.Jump then
 					local acc = hum.MoveDirection * 16
 					if hum.Jump then
@@ -182,7 +182,7 @@ AddModule(function()
 			end
 
 			local step = RunService.Heartbeat:Connect(function()
-				hum.PlatformStand = true
+				hum.EvaluateStateMachine = false
 				local he = figure:FindFirstChild("Head")
 				local la = figure:FindFirstChild("Left Arm")
 				local ra = figure:FindFirstChild("Right Arm")
@@ -662,7 +662,7 @@ AddModule(function()
 			end
 
 			local step = RunService.Stepped:Connect(function(dt)
-				hum.PlatformStand = true
+				hum.EvaluateStateMachine = false
 				if hum.MoveDirection.Magnitude > 0 or hum.Jump then
 					local acc = hum.MoveDirection * 16
 					if hum.Jump then
@@ -709,7 +709,7 @@ AddModule(function()
 		if not figure then return end
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
-		hum.PlatformStand = false
+		hum.EvaluateStateMachine = true
 	end
 	return m
 end)
