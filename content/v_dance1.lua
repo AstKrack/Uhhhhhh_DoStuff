@@ -28,17 +28,23 @@ AddModule(function()
 	m.Assets = {}
 
 	m.Mode = 0
+	m.Speed = 16
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateDropdown(parent, "Type", {"Normal", "Jointless", "CFrame Bug", "\"Realistic\""}, m.Mode + 1).Changed:Connect(function(val)
 			m.Mode = val - 1
 		end)
+		Util_CreateSlider(parent, "Move Speed", m.Speed, 0, 128, 8).Changed:Connect(function(val)
+			m.Speed = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Mode = save.Mode or m.Mode
+		m.Speed = save.Speed or m.Speed
 	end
 	m.SaveConfig = function()
 		return {
-			Mode = m.Mode
+			Mode = m.Mode,
+			Speed = m.Speed,
 		}
 	end
 
@@ -126,9 +132,9 @@ AddModule(function()
 			local step = RunService.Heartbeat:Connect(function()
 				hum.EvaluateStateMachine = false
 				if hum.MoveDirection.Magnitude > 0 or hum.Jump then
-					local acc = hum.MoveDirection * 16
+					local acc = hum.MoveDirection * m.Speed
 					if hum.Jump then
-						acc += Vector3.new(0, 16, 0)
+						acc += Vector3.new(0, m.Speed, 0)
 					end
 					root.Velocity = acc * figure:GetScale()
 				end
@@ -664,9 +670,9 @@ AddModule(function()
 			local step = RunService.Stepped:Connect(function(dt)
 				hum.EvaluateStateMachine = false
 				if hum.MoveDirection.Magnitude > 0 or hum.Jump then
-					local acc = hum.MoveDirection * 16
+					local acc = hum.MoveDirection * m.Speed
 					if hum.Jump then
-						acc += Vector3.new(0, 16, 0)
+						acc += Vector3.new(0, m.Speed, 0)
 					end
 					for _,v in Ragdoll:GetDescendants() do
 						if v:IsA("BasePart") then
