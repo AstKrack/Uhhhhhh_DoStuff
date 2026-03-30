@@ -9442,8 +9442,8 @@ AddModule(function()
 		
 		-- sword
 		sword.Offset = joints.sw
-			* CFrame.new(-0.1, -1.63, -0.89, -1, 0, 0, 0, 0, -1, 0, -1, 0)
-			* CFrame.new(0, -3.94, 2.94, 1, 0, 0, 0, 0, 1, 0, -1, 0)
+			* CFrame.new(-0.1, -1.63, -0.89, -1, 0, 0, 0, 0, -1, 0, -1, 0):Inverse()
+			* CFrame.new(0, -3.94, 2.94, 1, 0, 0, 0, 0, 1, 0, -1, 0):Inverse()
 			* CFrame.Angles(1.57, 0, 0)
 		sword.Disable = not not isdancing
 	end
