@@ -7692,6 +7692,7 @@ AddModule(function()
 					CreateSound("128788885488982", 1, 0.5)
 				end
 				if hum:GetState() == Enum.HumanoidStateType.Flying then
+					hum:ChangeState(Enum.HumanoidStateType.FreeFall)
 				end
 			end
 			if gofly then
@@ -7700,7 +7701,7 @@ AddModule(function()
 					local dir = (ReanimCamera.CFrame.LookVector * 2 + hum.MoveDirection).Unit
 					hum.WalkSpeed = 0.001
 					if not hum.PlatformStand then
-						hum
+						hum:ChangeState(Enum.HumanoidStateType.Flying)
 					end
 					local vel = root.Velocity
 					vel += (dir * 49 + Vector3.new(0, workspace.Gravity + 1, 0)) * dt
@@ -7710,7 +7711,7 @@ AddModule(function()
 					end
 					root.Velocity = xz + Vector3.new(0, vel.Y, 0)
 					local cf = CFrame.lookAlong(Vector3.zero, dir) * CFrame.Angles(-1.5, 0, 0)
-					root.CFrame = cf + root.CFrame.Position
+					root.CFrame = CFrame.lookAlong(Vector3.zero, cf.LookVector * Vector3.new(1, 0.001, 1)) + root.CFrame.Position
 					torsooff = root.CFrame.Rotation:ToObjectSpace(cf)
 				else
 					hum.WalkSpeed = 112 * scale
