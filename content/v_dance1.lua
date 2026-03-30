@@ -537,6 +537,8 @@ AddModule(function()
 							end
 						end
 					end
+					TimeOfPreserve += dt * math.min(2, velocity.Magnitude / 16)
+					strength *= math.clamp(velocity.Magnitude / 10 - 0.495, 0.05, 1)
 					if IAmShocked > 0 then
 						IAmShocked -= dt
 						for name,_ in Muscles do
@@ -557,8 +559,6 @@ AddModule(function()
 							anim[name] = FearOfHeights[name]
 						end
 					else
-						TimeOfPreserve += dt * math.min(2, velocity.Magnitude / 16)
-						strength *= math.clamp(velocity.Magnitude / 10, 0.05, 1)
 						anim.Neck = CFrame.Angles(math.rad(-45), 0, 0)
 						anim.Waist = CFrame.Angles(math.rad(-45), 0, 0)
 						anim.LeftShoulder = CFrame.new(0.1, 0, -0.1) * CFrame.Angles(math.rad(60), math.rad(-30), 0)
