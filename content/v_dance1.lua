@@ -569,7 +569,7 @@ AddModule(function()
 						anim.RightHip = CFrame.Angles(math.rad(110), math.rad(10), 0)
 						anim.LeftKnee = CFrame.Angles(math.rad(90), 0, 0)
 						anim.RightKnee = CFrame.Angles(math.rad(90), 0, 0)
-						if root.RotVelocity.Magnitude < math.pi * 1.8 then
+						if root.RotVelocity.Magnitude < math.pi * 1.8 or true then
 							if TimeOfFalling > 1 then
 								local x = TimeOfPreserve * math.pi * 3.9
 								local sin, cos = math.sin(x), math.cos(x)
