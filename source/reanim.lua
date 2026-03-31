@@ -1047,7 +1047,6 @@ do
 	impala.BorderColor3 = Color3.new(1, 1, 1)
 	impala.Image = Util.GetCDNAsset("glowingpala.graphic.png")
 	impala.ImageColor3 = Color3.new(0, 0, 1)
-	impala.ImageTransparency = 1
 	impala.ZIndex = 5
 	AddToRenderStep(function(t)
 		local h, s, _ = GetUIColor(t):ToHSV()
