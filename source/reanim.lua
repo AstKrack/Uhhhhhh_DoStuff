@@ -190,7 +190,7 @@ Util.Instance = function(cl, p)
 end
 Util.LinkDestroyI2I = function(a, b)
 	a.Destroying:Once(function()
-		b:Destroy()
+		task.defer(b.Destroy, b)
 	end)
 end
 Util.LinkDestroyI2C = function(a, b)
@@ -6937,7 +6937,7 @@ do
 	local _lastclickgpe = false
 	local _lastclicktick = 0
 	local _lastclickpos = Vector3.zero
-	UserInputService.InputBegan:Connect(function(input, guiprocessed)
+	UserInputService.InputBegan:Connect(function(input, gpe)
 		if input.UserInputType == Enum.UserInputType.Keyboard then
 			if input.KeyCode == selectedkey then
 				HoldingCtrl.Value = true
@@ -6950,7 +6950,7 @@ do
 			_lastclickpos = input.Position
 		end
 	end)
-	UserInputService.InputEnded:Connect(function(input, guiprocessed)
+	UserInputService.InputEnded:Connect(function(input, gpe)
 		if input.UserInputType == Enum.UserInputType.Keyboard then
 			if input.KeyCode == selectedkey then
 				HoldingCtrl.Value = false
@@ -6985,6 +6985,9 @@ do
 		else
 			ReanimCharacterTeleport(Vector3.new(0, 0, 0))
 		end
+	end)
+	UI.CreateButton(MainPage, "Teleport to 'LastSafe'", 20).Activated:Connect(function()
+		ReanimCharacterTeleport(Vector3.new(0, FallenPartsDestroyHeight - 5000, 0))
 	end)
 	local TeleportToPlayerSel = UI.CreateText(MainPage, "<font color=\"#AAAAAA\">(enter a player name)</font>", 15, Enum.TextXAlignment.Center)
 	local TeleportToPlayer = UI.CreateTextbox(MainPage, "", "Teleport To Player", 20)
@@ -8549,11 +8552,11 @@ local function getgithubraw(path)
 		return resp.Body
 	end
 	if s and resp then
-		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET api./" .. path .. " " .. resp.StatusCode
+		InitLogsText.Text ..= "\n[WARN] [GitGET] GET api./" .. path .. " " .. resp.StatusCode
 	elseif s then
-		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET api./" .. path .. " NIL"
+		InitLogsText.Text ..= "\n[WARN] [GitGET] GET api./" .. path .. " NIL"
 	else
-		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET api./" .. path .. " ERR " .. resp
+		InitLogsText.Text ..= "\n[WARN] [GitGET] GET api./" .. path .. " ERR " .. resp
 	end
 	InitLogsText.Text ..= "\n[LOG] [GitGET] GET raw./" .. path
 	s, resp = pcall(request, {
@@ -8564,11 +8567,11 @@ local function getgithubraw(path)
 		return resp.Body
 	end
 	if s and resp then
-		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET raw./" .. path .. " " .. resp.StatusCode
+		InitLogsText.Text ..= "\n[WARN] [GitGET] GET raw./" .. path .. " " .. resp.StatusCode
 	elseif s then
-		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET raw./" .. path .. " NIL"
+		InitLogsText.Text ..= "\n[WARN] [GitGET] GET raw./" .. path .. " NIL"
 	else
-		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET raw./" .. path .. " ERR " .. resp
+		InitLogsText.Text ..= "\n[WARN] [GitGET] GET raw./" .. path .. " ERR " .. resp
 	end
 	return nil
 end
@@ -8614,7 +8617,7 @@ local function ForceModuleReload(force)
 		end
 		InitLogsText.Text ..= "\n[LOG] Checked all SHA1 hashes..."
 	end, function()
-		InitLogsText.Text ..= "\n[ERROR] SHA1 hashes check failed!"
+		InitLogsText.Text ..= "\n[WARN] SHA1 hashes check failed!"
 	end)
 	local wasold = false
 	if SaveData.VanillaModuleCache then
@@ -8704,6 +8707,8 @@ local function ForceModuleReload(force)
 	InitLogsText.Text ..= "\n[LOG] Init complete!"
 	Util.Notify("Init complete" .. (InitLogsText.Text:find("ERROR") and ", there may be errors" or ""))
 	IsUhhhhhhFullyLoaded = true
+	if not Reanimate.Character then return end
+	Reanimate.CreateCharacter()
 end
 UI.CreateSeparator(MainPage)
 UI.CreateText(MainPage, "<b>MODULES MANAGEMENT</b>", 15, Enum.TextXAlignment.Center)
