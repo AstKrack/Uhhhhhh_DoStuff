@@ -377,8 +377,6 @@ do
 		"fr_keygen31.ft2.mp3",
 		"lightinursoul.graphic.png",
 		"letriangul.graphic.png",
-		"wearegenesis.graphic.png",
-		"glowingpala.graphic.png",
 	}
 	local redownloadeverything = SaveData.CDNVersion ~= CDNVersion
 	local theresassetsmissing = redownloadeverything
@@ -650,29 +648,173 @@ UISound.Music.Ended:Connect(function()
 	MusicPlayer.PlayMusic()
 end)
 
--- fake obfuscation lag
-do local s = os.clock() + 0.5 + math.random() while os.clock() < s do end end
-task.wait(0.2)
-
 SaveData.SkipIntro = not not SaveData.SkipIntro
-do
-	local genesis = Instance.new("ImageLabel", UIMainFrame)
-	genesis.AnchorPoint = Vector2.new(0.5, 0.5)
-	genesis.Position = UDim2.fromScale(0.5, 0.5)
-	genesis.Size = UDim2.fromOffset(100, 100)
-	genesis.Rotation = 15
-	genesis.BackgroundTransparency = 1
-	genesis.Image = Util.GetCDNAsset("wearegenesis.graphic.png")
-	genesis.ImageColor3 = Color3.new(0, 0, 1)
-	genesis.ImageTransparency = 1
-	genesis.ZIndex = 99999
-	TweenService:Create(genesis, TweenInfo.new(0.75, Enum.EasingStyle.Linear, Enum.EasingDirection.In, -1, true), {ImageTransparency = 0}):Play()
-	local dur = 2 + math.random() * 3
-	Debris:AddItem(genesis, dur + math.random() * 2)
-	task.wait(dur)
+if SaveData.SkipIntro then
+	MusicPlayer.PlayMusic()
+else
+	UISound.Music.Volume = 0
+	MusicPlayer.PlayMusic(1)
+	repeat RunService.RenderStepped:Wait() until UISound.Music.IsLoaded
+	UISound.Music:Stop()
+	task.wait()
+	UISound.Music:Play()
+	UISound.Music.Volume = 1
+	UISound.Music.TimePosition = 0
+	local scrolltexts = {
+		"stevetherealone presents a script                                 ",
+		"hi guys welcome to my game                                        ",
+		"holy shit where did our friends go?               *gets vc warned*",
+		"greetings to qpmbsjbvt for getting me into reanimation            ",
+		"those who know the place called ajman, dubai, uae                 ",
+		":3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 >:3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3",
+		--"quick intro and quick scrolltext                                                                   hi i like dih",
+		"quick intro        with quick scrolltext         and you will miss the punchline              punchline                did you get the punchline?  ",
+		"meeeooowwwwwwwwww >:3                                          maw",
+		"wwwwwwwwwwwwwwwwwww                         grass                 ",
+		"erika's the towers                            sfoth iv update when",
+		"i will leak all ur script i will leak all ur script i will leak al",
+		"kasil loves gooning to everybody                                  ",
+		"fflags are dead lol                                               ",
+		"imagine being called a dummy                                      ",
+		-- DEAD MEME "nothing beats a jet 2 holiday. and right now, im beating myself to",
+		"hi                          ...                oxide more like sui",
+		"even if I mope, nothing good will happen! if i worked hard today, today will be perfecto!",
+		"hi                          ...                                   ",
+		"who the fuck even reads this??                     hi guys        ",
+		"          trust me the ui looks good             here it comes    ",
+		-- its not a btp release "is this even a btp legends release?? i myself dk if it should be  ",
+		"dying is scary, but living is difficult                               dying: gifted scary; living: pure difficult",
+		"but i halter my forethought, i keep on running like a chicken with his dih",
+		"kaiya sounds like a perfect name for a genshin impact character   ",
+		"this is an intro lol                        ",
+		"greetings to myworld for helping with -net less                   ",
+		"Omega-Skidded Immortality Lord Diddy Blud On The Calculator       ",
+		"all UI music credits to dubmood, zabutom, ogge, 4mat and hoster   ",
+		"heres the triforce                and heres my name                              ",
+		"skids are now taking credit of this entire script, meaning its so good           ",
+		-- nonono i cant advertise that anymore "whenever i see hat reanimation nowadays i check to see if they are collidable    ",
+		"skids, be alert, go to weao.xyz for your roblox hacks!            ",
+	}
+	scrolltexts = scrolltexts[math.random(1, #scrolltexts)]
+	local fade = TweenService:Create(UIMainFrame, TweenInfo.new(5), {BackgroundTransparency = 0.5})
+	fade:Play()
+	local scrolltext = Util.MakeText(scrolltexts)
+	scrolltext.Parent = UIMainFrame
+	scrolltext.ZIndex = 0
+	scrolltext.AnchorPoint = Vector2.new(0, 0.5)
+	scrolltext.Position = UDim2.new(1.5, 0, 0.5, 0)
+	Util.SetTextColor(scrolltext, Color3.new(1, 1, 1), 0.6)
+	TweenService:Create(scrolltext, TweenInfo.new(5.256, Enum.EasingStyle.Linear), {
+		Position = UDim2.new(1, 0, 0.5, 0),
+		AnchorPoint = Vector2.new(1, 0.5),
+	}):Play()
+	local scrolltextratio = scrolltext.Size.X.Offset / scrolltext.Size.Y.Offset
+	local Triforce1 = Util.MakeTriforce(3, Color3.new(1, 0.7, 0), 4)
+	local Triforce2 = Util.MakeTriforce(3, Color3.new(0.8, 0.4, 0), 4)
+	Triforce1.ZIndex = 2
+	Triforce2.ZIndex = 1
+	Triforce1.Parent = UIMainFrame
+	Triforce2.Parent = UIMainFrame
+	local TRI_offset = 0.01
+	local TRI_height = 0.5
+	local TRI_rot = 0
+	local TRI_rotvel = 720
+	local TRI_scale = 0
+	local stevetherealone = Util.Instance("TextLabel", UIMainFrame)
+	stevetherealone.TextScaled = true
+	stevetherealone.Font = Enum.Font.Arcade
+	stevetherealone.TextColor3 = Color3.new(1, 1, 1)
+	stevetherealone.BackgroundColor3 = Color3.new(0, 0, 0)
+	stevetherealone.BackgroundTransparency = 0
+	stevetherealone.BorderColor3 = Color3.new(1, 1, 1)
+	stevetherealone.BorderSizePixel = 8
+	stevetherealone.AnchorPoint = Vector2.new(0.5, 0.5)
+	stevetherealone.Position = UDim2.new(0.5, 0, 0.5, 0)
+	stevetherealone.Size = UDim2.new(0, 0, 0, 0)
+	stevetherealone.Visible = false
+	stevetherealone.ZIndex = 3
+	local stevetherealone_padding = Util.Instance("UIPadding", stevetherealone)
+	stevetherealone_padding.PaddingLeft = UDim.new(0, 10)
+	stevetherealone_padding.PaddingRight = UDim.new(0, 10)
+	stevetherealone_padding.PaddingTop = UDim.new(0, 10)
+	stevetherealone_padding.PaddingBottom = UDim.new(0, 10)
+	while true do
+		local dt = RunService.Heartbeat:Wait()
+		local t = UISound.Music.TimePosition
+		if t >= 5.256 then break end
+		local screensize = Util.GetScreenSize()
+		local ysize = screensize.Y
+		local height = ysize / 3
+		scrolltext.Size = UDim2.fromOffset(height * scrolltextratio * 0.5, height)
+		TRI_rot = (TRI_rot + TRI_rotvel * dt) % 360
+		TRI_rotvel *= math.exp(-0.25 * dt)
+		Triforce1.Size = UDim2.fromOffset(TRI_scale * ysize * 0.8, TRI_scale * ysize * 0.8)
+		if t >= 4.256 then
+			local a = t - 4.256
+			Triforce1.Size = Triforce1.Size:Lerp(UDim2.fromOffset(160, 160), a)
+			TRI_height = 0.5 + (15 / ysize) * a
+		end
+		Triforce2.Size = Triforce1.Size
+		Triforce1.Position = UDim2.new(0.5, ysize * -TRI_offset, TRI_height, ysize * -TRI_offset)
+		Triforce2.Position = UDim2.new(0.5, 0, TRI_height, 0)
+		Triforce1.Rotation = TRI_rot
+		Triforce2.Rotation = TRI_rot
+		if t < 4.256 then
+			TRI_scale = 1 - ((1 - math.min(1, t / 3)) ^ 2)
+		else
+			local a = t - 4.256
+			TRI_scale = 1 + a * 13
+			if a > 0.5 then
+				Triforce1.ZIndex = 5
+				Triforce2.ZIndex = 4
+			else
+				Triforce1.ZIndex = 2
+				Triforce2.ZIndex = 1
+			end
+		end
+		if t < 2.152 then
+			stevetherealone.Text = ""
+			stevetherealone.Visible = false
+		elseif t < 2.652 then
+			local a = (t - 2.152) / 0.5
+			local z = 20 * ((a * 100) // 20)
+			stevetherealone.Text = ""
+			stevetherealone.Visible = true
+			stevetherealone.Size = UDim2.fromOffset(z, z)
+		elseif t < 4.756 then
+			stevetherealone.Text = "STEVE\nTHERE\nALONE"
+			stevetherealone.Visible = true
+			stevetherealone.Size = UDim2.fromOffset(100, 100)
+		else
+			local a = (t - 4.756) / 0.5
+			local x = 20 * ((a * 260 + 100) // 20)
+			local y = 20 * ((math.min(1, a / 0.538) * 140 + 100) // 20)
+			stevetherealone.Text = ""
+			stevetherealone.Visible = true
+			stevetherealone.Size = UDim2.fromOffset(x, y)
+			stevetherealone.Position = UDim2.new(0.5, 0, 0.5, 0)
+		end
+	end
+	stevetherealone:Destroy()
+	Triforce1:Destroy()
+	Triforce2:Destroy()
+	scrolltext:Destroy()
+	fade:Cancel()
+	UIMainFrame.BackgroundTransparency = 1
+	local flash = Util.Instance("Frame", UIMainFrame)
+	flash.AnchorPoint = Vector2.new(0, 0)
+	flash.Position = UDim2.new(0, 0, 0, 0)
+	flash.Size = UDim2.new(1, 0, 1, 0)
+	flash.BackgroundColor3 = Color3.new(1, 1, 1)
+	flash.BackgroundTransparency = 0
+	flash.BorderSizePixel = 0
+	flash.Interactable = false
+	flash.ZIndex = 256
+	TweenService:Create(flash, TweenInfo.new(1), {
+		BackgroundTransparency = 1
+	}):Play()
+	Debris:AddItem(flash, 1)
 end
-
-MusicPlayer.PlayMusic()
 
 SaveData.MuteUIMusic = not not SaveData.MuteUIMusic
 SaveData.MuteReanimMusic = not not SaveData.MuteReanimMusic
@@ -699,8 +841,7 @@ end
 local StylizedObjs = {}
 local function Stylize(obj, options)
 	options = options or {}
-	Util.Instance("UICorner", obj).CornerRadius = UDim.new(0, 3)
-	obj.BackgroundColor3 = Color3.new(0, 0, 0)
+	Util.Instance("UICorner", obj).CornerRadius = UDim.new(0, 5)
 	local Out = Util.Instance("UIStroke", obj)
 	Out.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	Out.Color = Color3.new(1, 1, 1)
@@ -708,19 +849,41 @@ local function Stylize(obj, options)
 	Out.Thickness = 1
 	Out.Transparency = 0
 	Out.Enabled = true
-	local OutGrad = Instance.new("UIGradient", Out)
-	OutGrad.Color = ColorSequence.new(Color3.new(0, 0, 0))
-	OutGrad.Enabled = true
-	OutGrad.Offset = Vector2.zero
-	OutGrad.Rotation = -45
-	OutGrad.Transparency = NumberSequence.new(0)
+	obj.BackgroundColor3 = Color3.new(0, 0, 0)
+	local Glos = {}
 	if options.Glow == true then
-		Out.Thickness = 8
+		local GloF = Util.Instance("Frame", UIMainFrame)
+		Util.LinkDestroyI2I(obj, GloF)
+		GloF.Interactable = false
+		GloF.BackgroundTransparency = 1
+		local function update()
+			GloF.AnchorPoint = obj.AnchorPoint
+			GloF.Position = obj.Position - Util.Vector2ToUDim2Offset((obj.AnchorPoint * 2 - Vector2.one) * 5)
+			GloF.Size = obj.Size - UDim2.fromOffset(10, 10)
+			GloF.Visible = obj.Visible
+			GloF.ZIndex = obj.ZIndex - 2
+		end
+		update()
+		obj.Changed:Connect(update)
+		local tex = Util.GetCDNAsset("lightinursoul.graphic.png")
+		for x=0, 2 do
+			for y=0, 2 do
+				local Glo = Util.Instance("ImageLabel", GloF)
+				Glo.AnchorPoint = Vector2.new(1 - math.min(x, 1), 1 - math.min(y, 1))
+				Glo.Position = UDim2.fromScale(math.max(x - 1, 0), math.max(y - 1, 0))
+				Glo.Size = UDim2.new(1 - math.abs(x - 1), x == 1 and 0 or 32, 1 - math.abs(y - 1), y == 1 and 0 or 32)
+				Glo.BackgroundTransparency = 1
+				Glo.Image = tex
+				Glo.ImageRectOffset = Vector2.new(math.min(x, 1) * 256, math.min(y, 1) * 256)
+				Glo.ImageRectSize = Vector2.new(x == 1 and 0 or 256, y == 1 and 0 or 256)
+				table.insert(Glos, Glo)
+			end
+		end
 	end
 	table.insert(StylizedObjs, {
 		obj = obj,
 		Out = Out,
-		OutGrad = OutGrad,
+		Glos = Glos,
 		options = options,
 	})
 end
@@ -786,17 +949,17 @@ local function UpdateGrads(t)
 	if v > v2 then
 		glc = bgc
 	end
-	local r = (t / 0.7) * 135
-	local ogc = ColorSequence.new(c, bgc)
 	for _,grad in StylizedObjs do
-		local obj, Out, OutGrad, options = grad.obj, grad.Out, grad.OutGrad, grad.options
+		local obj, Out, Glos, options = grad.obj, grad.Out, grad.Glos, grad.options
+		Out.Color = c
 		if options.Depthed then
 			obj.BackgroundColor3 = bgcd
 		else
 			obj.BackgroundColor3 = bgc
 		end
-		OutGrad.Rotation = r
-		OutGrad.Color = ogc
+		for _,v in Glos do
+			v.ImageColor3 = glc
+		end
 	end
 end
 local function SetUITheme(index)
@@ -886,40 +1049,13 @@ end
 SaveData.UITheme = SaveData.UITheme or 1
 SetUITheme(SaveData.UITheme)
 
-local ReanimPage
 local CracktroFrameText = "Uhhhhhh Reanimate V" .. UhhhhhhVersion
-local UIMainWindow, AWindowContent, WindowContent
-
-local _funcrefreshes = {}
-local function AddToRenderStep(func, linkto)
-	table.insert(_funcrefreshes, func)
-	if linkto then
-		linkto.Destroying:Connect(function()
-			local i = table.find(_funcrefreshes, func)
-			if i then
-				table.remove(_funcrefreshes, i)
-			end
-		end)
-	end
-	return func
-end
-local _totalrendertime = 0
-RunService:BindToRenderStep("Uhhhhhh_Render" .. Util.RandomString(), Enum.RenderPriority.Last.Value - 69, function(dt)
-	_totalrendertime += dt
-	UpdateGrads(_totalrendertime)
-	AWindowContent.Visible = UIMainWindow.Size.Y.Offset > 36
-	for _,func in _funcrefreshes do
-		local s, e = pcall(func, _totalrendertime, dt)
-		if not s then warn(e) end
-	end
-end)
-
-do
+local UIMainWindow, WindowContent do
 	UIMainWindow = Util.Instance("Frame", UIMainFrame)
 	UIMainWindow.Active = true
 	UIMainWindow.AnchorPoint = Vector2.new(0.5, 0.5)
 	UIMainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
-	UIMainWindow.Size = UDim2.new(0, 480, 0, 280)
+	UIMainWindow.Size = UDim2.new(0, 360, 0, 240)
 	UIMainWindow.BackgroundTransparency = 0
 	UIMainWindow.BackgroundColor3 = Color3.new(1, 1, 1)
 	UIMainWindow.BorderSizePixel = 0
@@ -954,12 +1090,12 @@ do
 	local TopBarFrame = Util.Instance("Frame", UIMainWindow)
 	TopBarFrame.Position = UDim2.new(0, 0, 0, 0)
 	TopBarFrame.Size = UDim2.new(1, 0, 0, 30)
-	TopBarFrame.BackgroundTransparency = 1
+	TopBarFrame.BackgroundTransparency = 0
 	TopBarFrame.BackgroundColor3 = Color3.new(1, 1, 1)
 	TopBarFrame.BorderSizePixel = 0
 	TopBarFrame.ClipsDescendants = true
 	TopBarFrame.ZIndex = 1
-	--Stylize(TopBarFrame)
+	Stylize(TopBarFrame)
 	
 	local TopBarText = Util.Instance("TextLabel", TopBarFrame)
 	TopBarText.AnchorPoint = Vector2.new(0, 0.5)
@@ -971,11 +1107,81 @@ do
 	TopBarText.TextColor3 = Color3.new(1, 1, 1)
 	TopBarText.TextSize = 20
 	TopBarText.TextXAlignment = Enum.TextXAlignment.Left
-	TopBarText.Text = "    Genesis FE | v" .. UhhhhhhVersion
+	TopBarText.Text = "Uhhhhhh Reanimate | v" .. UhhhhhhVersion
 	TopBarText.RichText = true
 	RegisterTextLabel(TopBarText)
 	Util.ForceTextSize(TopBarText)
-	CracktroFrameText = "(c) Genesis FE. All rights reserved."
+	if (SaveData.SkipIntro and math.random(2) == 1) or os.date("%m %d") ~= "04 01" then
+		local quotes = {
+			"Ohhhhhh Re-create | v" .. UhhhhhhVersion,
+			"jumpscare",
+			"you'll never see it coming",
+			Player.Name .. "'s Uhhhhhh Session",
+			"genesis hat collide releaser admin gui",
+			"Delta Executor",
+			"optimise the optimised",
+			":troll:",
+			"solara executor",
+			"wait a minute smth aint right",
+			"gta6 releaser",
+			"HD Admin",
+			"The Return Of STEVE's Roserika",
+			"HI",
+			"<font color=\"#00DDFF\">Oxide</font> Version 67",
+			"currentangle v5",
+			"patchma hub by <font color=\"#0000FF\">MyWorld</font>",
+			"Genesis FE with extra steps",
+		}
+		if os.date("%m") == "12" and math.random(4) == 1 then
+			quotes = {
+				"ho ho ho",
+				"dess from deltarune",
+				"jesus christmas",
+				"Happy Xmas, " .. Player.Name,
+				"Razor1911 says... SOCIALIZE!",
+				"UHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+				"its cold outside get in here",
+				"christmas tree builder",
+				"UHHHH]",
+			}
+		end
+		if os.date("%m") == "01" and math.random(4) == 1 then
+			quotes = {
+				"new year new me",
+				"HAVE A HAPPY NEW YEAR",
+				"A NEW YEAR??",
+				"New Years, " .. Player.Name,
+				"did u explode yet?",
+				"KEEP YER KIDS SAFE FROM FIREWORK",
+				"kaboom? yes rico, kaboom.",
+			}
+		end
+		local aprilfools = os.date("%m") == "04 01"
+		if aprilfools then
+			local troll = math.random(3)
+			if troll == 1 then
+				CracktroFrameText = "Oxide Reanimation V67"
+				quotes = {"<font color=\"#00DDFF\">Oxide</font>   Reanimation"}
+				SetUITheme(3)
+			end
+			if troll == 2 then
+				CracktroFrameText = "patchma hub V67"
+				quotes = {"<font color=\"#0000FF\">patchma hub</font> by MyWorld"}
+				SetUITheme(4)
+			end
+			if troll == 3 then
+				CracktroFrameText = "Genesis V4 but better"
+				quotes = {"<font color=\"#CC11FF\">Genesis V4 - Neptunian V</font>"}
+				SetUITheme(5)
+			end
+		end
+		TopBarText.Text = quotes[math.random(1, #quotes)]
+		if not aprilfools then
+			task.delay(2, function()
+				TopBarText.Text = "Uhhhhhh Reanimate | v" .. UhhhhhhVersion
+			end)
+		end
+	end
 	
 	local TopBarClose = Util.Instance("TextButton", TopBarFrame)
 	TopBarClose.AnchorPoint = Vector2.new(1, 0)
@@ -1008,55 +1214,9 @@ do
 		end)
 	end
 	
-	AWindowContent = Util.Instance("Frame", UIMainWindow)
-	AWindowContent.Position = UDim2.new(0, 0, 0, 30)
-	AWindowContent.Size = UDim2.new(1, 0, 1, -35)
-	AWindowContent.BackgroundTransparency = 1
-	AWindowContent.ClipsDescendants = true
-	AWindowContent.ZIndex = 0
-	
-	ReanimPage = Util.Instance("Frame", AWindowContent)
-	ReanimPage.AnchorPoint = Vector2.new(0, 0)
-	ReanimPage.Position = UDim2.new(0, 0, 0, 0)
-	ReanimPage.Size = UDim2.new(0, 120, 1, 0)
-	ReanimPage.BackgroundTransparency = 0
-	ReanimPage.BackgroundColor3 = Color3.new(0, 0, 0)
-	ReanimPage.BorderSizePixel = 1
-	ReanimPage.BorderColor3 = Color3.new(1, 1, 1)
-	ReanimPage.Visible = true
-	ReanimPage.ZIndex = 0
-	ReanimPage.ClipsDescendants = true
-	AddToRenderStep(function(t)
-		ReanimPage.BorderColor3 = GetUIColor(t)
-		ReanimPage.BackgroundColor3 = GetUIBGColor(t)
-	end, ReanimPage)
-	local UIList = Util.Instance("UIListLayout", ReanimPage)
-	UIList.FillDirection = Enum.FillDirection.Vertical
-	UIList.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	UIList.VerticalAlignment = Enum.VerticalAlignment.Bottom
-	UIList.Padding = UDim.new(0, 0)
-	UIList.SortOrder = Enum.SortOrder.LayoutOrder
-	
-	local impala = Instance.new("ImageLabel", AWindowContent)
-	impala.AnchorPoint = Vector2.new(0.5, 0)
-	impala.Position = UDim2.fromOffset(60, 10)
-	impala.Size = UDim2.fromOffset(100, 100)
-	impala.BackgroundTransparency = 0
-	impala.BackgroundColor3 = Color3.new(0, 0, 0)
-	impala.BorderSizePixel = 1
-	impala.BorderColor3 = Color3.new(1, 1, 1)
-	impala.Image = Util.GetCDNAsset("glowingpala.graphic.png")
-	impala.ImageColor3 = Color3.new(0, 0, 1)
-	impala.ZIndex = 5
-	AddToRenderStep(function(t)
-		local h, s, _ = GetUIColor(t):ToHSV()
-		impala.ImageColor3 = Color3.fromHSV(h, s, 1)
-	end, ReanimPage)
-	Stylize(impala)
-	
-	WindowContent = Util.Instance("Frame", AWindowContent)
-	WindowContent.Position = UDim2.new(0, 120, 0, 0)
-	WindowContent.Size = UDim2.new(1, -120, 1, 0)
+	WindowContent = Util.Instance("Frame", UIMainWindow)
+	WindowContent.Position = UDim2.new(0, 0, 0, 30)
+	WindowContent.Size = UDim2.new(1, 0, 1, -35)
 	WindowContent.BackgroundTransparency = 1
 	WindowContent.ClipsDescendants = true
 	WindowContent.ZIndex = 0
@@ -1074,7 +1234,6 @@ do
 		MainWindowClosed = not MainWindowClosed
 		if MainWindowClosed then
 			MainWindowPosOpen = UIMainWindow.Position
-			TopBarText.Text = "Genesis"
 			TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
 				Position = MainWindowPosClose,
 				Size = UDim2.fromOffset(112, 30)
@@ -1090,13 +1249,12 @@ do
 				MainWindowTweening = false
 			end)
 		else
-			TopBarText.Text = "    Genesis FE | v" .. UhhhhhhVersion
 			WindowContent.Visible = true
 			MainWindowPosClose = UIMainWindow.Position
 			SaveData.WindowClosedPosition = {MainWindowPosClose.X.Scale, MainWindowPosClose.X.Offset, MainWindowPosClose.Y.Scale, MainWindowPosClose.Y.Offset}
 			TweenService:Create(UIMainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
 				Position = MainWindowPosOpen,
-				Size = UDim2.fromOffset(480, 280)
+				Size = UDim2.fromOffset(360, 240)
 			}):Play()
 			TweenService:Create(TopBarClose.A, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
 				Rotation = 0
@@ -1145,6 +1303,30 @@ do
 	end)
 end
 
+local _funcrefreshes = {}
+local function AddToRenderStep(func, linkto)
+	table.insert(_funcrefreshes, func)
+	if linkto then
+		linkto.Destroying:Connect(function()
+			local i = table.find(_funcrefreshes, func)
+			if i then
+				table.remove(_funcrefreshes, i)
+			end
+		end)
+	end
+	return func
+end
+local _totalrendertime = 0
+RunService:BindToRenderStep("Uhhhhhh_Render" .. Util.RandomString(), Enum.RenderPriority.Last.Value - 69, function(dt)
+	_totalrendertime += dt
+	UpdateGrads(_totalrendertime)
+	WindowContent.Visible = UIMainWindow.Size.Y.Offset > 35
+	for _,func in _funcrefreshes do
+		local s, e = pcall(func, _totalrendertime, dt)
+		if not s then warn(e) end
+	end
+end)
+
 do
 	Util.Notify = function(text)
 		StarterGui:SetCore("SendNotification", {
@@ -1159,7 +1341,7 @@ local CracktroFrame = Util.Instance("Frame", WindowContent)
 CracktroFrame.Active = true
 CracktroFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 CracktroFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-CracktroFrame.Size = UDim2.new(0, 360, 0, 245)
+CracktroFrame.Size = UDim2.new(0, 360, 0, 205)
 CracktroFrame.BackgroundTransparency = 0
 CracktroFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 CracktroFrame.BorderSizePixel = 1
@@ -1428,7 +1610,7 @@ function UI.CreatePage()
 	local Frame = Util.Instance("ScrollingFrame", WindowContent)
 	Frame.AnchorPoint = Vector2.new(0.5, 0.5)
 	Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-	Frame.Size = UDim2.new(0, 360, 0, 245)
+	Frame.Size = UDim2.new(0, 360, 0, 205)
 	Frame.BackgroundTransparency = 0
 	Frame.BackgroundColor3 = Color3.new(0, 0, 0)
 	Frame.BorderSizePixel = 1
@@ -2107,7 +2289,7 @@ function UI.CreateItemListPage()
 	local Frame = Util.Instance("Frame", WindowContent)
 	Frame.AnchorPoint = Vector2.new(0.5, 0.5)
 	Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-	Frame.Size = UDim2.new(0, 360, 0, 245)
+	Frame.Size = UDim2.new(0, 360, 0, 205)
 	Frame.BackgroundTransparency = 0
 	Frame.BackgroundColor3 = Color3.new(0, 0, 0)
 	Frame.BorderSizePixel = 1
@@ -3715,7 +3897,7 @@ end
 do
 	local AntiflingHumanoids = {}
 	local AntiflingBaseParts = {}
-	local function OnStepped()
+	RunService.PreSimulation:Connect(function()
 		for i,v in AntiflingBaseParts do
 			if v:IsDescendantOf(workspace) then
 				v.CanCollide = false
@@ -3731,10 +3913,7 @@ do
 				table.remove(AntiflingHumanoids, i)
 			end
 		end
-	end
-	RunService.PreAnimation:Connect(OnStepped)
-	RunService.PreSimulation:Connect(OnStepped)
-	RunService.Stepped:Connect(OnStepped)
+	end)
 	local OnBasePart = function(v)
 		if v:IsA("BasePart") then
 			v.CanCollide = false
@@ -6238,18 +6417,18 @@ function HatReanimator.Start()
 		end
 		local RCRootPart = ReanimCharacter and ReanimCharacter:FindFirstChild("HumanoidRootPart")
 		local ltm = Reanimate.LocalTransparencyModifier
-		for _,v in BaseParts do
-			v.CanCollide = false
-			if not v:FindFirstAncestorWhichIsA("Tool") then
-				v.LocalTransparencyModifier = ltm
-			end
-		end
 		local t = os.clock()
 		local slocked = {}
 		if ReanimOkay then
 			local dt = RunService.Heartbeat:Wait()
 			if HatReanimator.RebuildRequired then
 				RefreshHatMap(Character)
+			end
+			for _,v in BaseParts do
+				v.CanCollide = false
+				if not v:FindFirstAncestorWhichIsA("Tool") then
+					v.LocalTransparencyModifier = ltm
+				end
 			end
 			if RCRootPart then
 				local rightarm = ReanimCharacter:FindFirstChild("Right Arm") or RCRootPart
@@ -6587,13 +6766,13 @@ do
 		SelectedReanimator.Config(ReanimatorConfigCanvas)
 	end)
 	SelectedReanimator.Config(ReanimatorConfigCanvas)
-	UI.CreateText(ReanimPage, "Enjoy my really awful UI design! It's awful, but hey atleast clicking Reanimate is faster!", 8, Enum.TextXAlignment.Center)
-	local ReanimateText = UI.CreateText(ReanimPage, "Running: NONE", 15, Enum.TextXAlignment.Center)
-	local ReanimateStartButton, ReanimateStartButtonText = UI.CreateButton(ReanimPage, "Reanimate", 20)
+	UI.CreateText(MainPage, " ", 5, Enum.TextXAlignment.Center)
+	local ReanimateText = UI.CreateText(MainPage, "Running: NONE", 15, Enum.TextXAlignment.Center)
+	local ReanimateStartButton, ReanimateStartButtonText = UI.CreateButton(MainPage, "* Reanimate *", 20)
 	ReanimateStartButton.Activated:Connect(function()
 		ReanimateStartButton.Interactable = false
 		if Reanimate.Current then
-			ReanimateStartButtonText.Text = "Stopping"
+			ReanimateStartButtonText.Text = "Stopping..."
 			Reanimate.Stopping = true
 			repeat task.wait() until not Reanimate.Stopping
 			Reanimate.Current.Running = nil
@@ -6601,9 +6780,9 @@ do
 			HumanoidLASetHookState(false)
 			ReanimateText.Text = "Running: NONE"
 			task.wait(1)
-			ReanimateStartButtonText.Text = "Reanimate"
+			ReanimateStartButtonText.Text = "* Reanimate *"
 		else
-			ReanimateStartButtonText.Text = "Starting"
+			ReanimateStartButtonText.Text = "Starting..."
 			Reanimate.Starting = true
 			Reanimate.Current = SelectedReanimator
 			HumanoidLASetHookState(Reanimate.UseLoadAnimationHook)
@@ -6612,15 +6791,15 @@ do
 			repeat task.wait() until not Reanimate.Starting
 			Reanimate.Current.Running = true
 			task.wait(1)
-			ReanimateStartButtonText.Text = "Deanimate"
+			ReanimateStartButtonText.Text = "* Deanimate *"
 		end
 		ReanimateStartButton.Interactable = true
 	end)
-	UI.CreateButton(ReanimPage, "Hitboxes", 15).Activated:Connect(function()
+	UI.CreateButton(MainPage, "Show Reanimate Hitboxes", 15).Activated:Connect(function()
 		if not Reanimate.Character then return end
 		ReanimateShowHitboxes()
 	end)
-	UI.CreateButton(ReanimPage, "Refresh", 10).Activated:Connect(function()
+	UI.CreateButton(MainPage, "Refresh Reanimate Character", 10).Activated:Connect(function()
 		if not Reanimate.Character then return end
 		Reanimate.CreateCharacter()
 	end)
