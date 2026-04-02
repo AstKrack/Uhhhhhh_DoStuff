@@ -6692,8 +6692,8 @@ function HatReanimator.Start()
 				end
 			end
 		end
+		RunService.PreRender:Wait()
 		if Reanimate:ShouldRotationType() then
-			RunService.PreRender:Wait()
 			local ocf = RCRootPart.CFrame
 			local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
 			local bx, by, bz = ocf:ToEulerAngles(Enum.RotationOrder.YXZ)
@@ -6702,6 +6702,13 @@ function HatReanimator.Start()
 				handle.CFrame = tcf:ToWorldSpace(ocf:ToObjectSpace(handle.CFrame))
 			end
 			RCRootPart.CFrame = tcf
+		end
+		if HatReanimator.HatsSpin then
+			for _,handle in slocked do
+				if math.random() < 0.5 then
+					handle.CFrame *= CFrame.Angles(math.random() * 2 * math.pi, math.random() * 2 * math.pi, math.random() * 2 * math.pi)
+				end
+			end
 		end
 	end
 	ResetHatRefs()
