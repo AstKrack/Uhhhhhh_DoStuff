@@ -6072,7 +6072,7 @@ function HatReanimator.Start()
 				RootPosition = Vector3.new(root.Position.X, FallenPartsDestroyHeight, root.Position.Z)
 			end
 		end
-		if not workspace.StreamingEnabled then
+		--[[if not workspace.StreamingEnabled then
 			local dir = CFrame.Angles(0, math.pi * 2 * math.random(), 0).LookVector * 300
 			while true do
 				local nearAPlayer = false
@@ -6089,7 +6089,7 @@ function HatReanimator.Start()
 					break
 				end
 			end
-		end
+		end]]
 		--pcall(function() Player.ReplicationFocus = character end)
 		if hatcols then
 			HatReanimator.Status.HatCollide = "Waiting for Permadeath."
