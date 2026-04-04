@@ -5711,7 +5711,7 @@ function HatReanimator.Start()
 		Wait1 = 0.25,
 		Wait2 = 0,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
-			RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 3, 0)) * CFrame.Angles(math.pi / 2, 0, 0)
+			RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 12, 0)) * CFrame.Angles(math.pi / 2, 0, 0)
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.zero, Vector3.zero
 		end,
 		State1 = function() end,
