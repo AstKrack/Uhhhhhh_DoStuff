@@ -6023,7 +6023,7 @@ function HatReanimator.Start()
 		if HatReanimator.DontFireCharAddOnThisChar == character then return end
 		currentping = Player:GetNetworkPing()
 		local toolnames = {}
-		for _,v in DelayedCharTools do print(v.Name) table.insert(toolnames, v.Name) end
+		for _,v in DelayedCharTools do table.insert(toolnames, v.Name) end
 		table.clear(BaseParts)
 		table.clear(CharHats)
 		table.clear(CharTools)
