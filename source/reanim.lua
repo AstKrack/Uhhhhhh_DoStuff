@@ -3732,6 +3732,9 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	Anchor.CustomPhysicalProperties = PhysicalProperties.new(100, 0, 0, 0, 0)
 	Anchor.Size = Vector3.new(2048, 2048, 2048)
 	local AnchorWeld = Instance.new("Weld")]]
+	local BodyForce = Instance.new("BodyForce")
+	BodyForce.Parent = RCRootPart
+	BodyForce.Force = Vector3.zero
 	RC.Parent = workspace
 	RCRootPart.CFrame = cf
 	local SafeY = cf.Y
@@ -3796,11 +3799,15 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		if scale ~= RC:GetScale() then
 			RC:ScaleTo(scale)
 		end
+		local force = Vector3.zero
 		local RCHumanoidState = RCHumanoid:GetState().Name
+		if RCHumanoidState == "Swimming" then
+			force += Vector3.new(0, workspace.Gravity, 0) * RCRootPart.AssemblyMass
+		end
 		local gravaff = not not table.find(fallingStates, RCHumanoidState)
 		if gravaff then
 			if Reanimate.ScaleGravity and not RCRootPart:IsGrounded() then
-				RCRootPart.AssemblyLinearVelocity += Vector3.new(0, -workspace.Gravity * (scale - 1) * 0.25 * dt, 0)
+				force += Vector3.new(0, -workspace.Gravity * (scale - 1), 0) * RCRootPart.AssemblyMass
 			end
 		end
 		if LastJump ~= CJump then
@@ -3831,6 +3838,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			RCHumanoid:Move(MoveCF:VectorToWorldSpace(CMove))
 		end
 		RCHumanoid.Jump = CJump
+		BodyForce.Force = force
 		if RCRootPart.Position.Y < FallenPartsDestroyHeight + 3 * Reanimate.CharacterScale then
 			RCRootPart.CFrame = LastSafest
 			RCRootPart.Velocity = Vector3.new(0, 50, 0)
@@ -6066,6 +6074,7 @@ function HatReanimator.Start()
 		local RootPart = character:WaitForChild("HumanoidRootPart", 10)
 		if not RootPart then return end
 		local RootPosition = Vector3.new(RootPart.Position.X, FallenPartsDestroyHeight, RootPart.Position.Z)
+		local ReanimCharacter = Reanimate.Character
 		if ReanimCharacter then
 			local root = ReanimCharacter:FindFirstChild("HumanoidRootPart")
 			if root then
