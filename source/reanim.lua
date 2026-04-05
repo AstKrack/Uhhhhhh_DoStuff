@@ -3914,7 +3914,7 @@ do
 	local OnStepped = function()
 		for i,v in AntiflingBaseParts do
 			if v:IsDescendantOf(workspace) then
-				v.CanCollide = false
+				if v.CanCollide then v.CanCollide = false end
 				v.AssemblyLinearVelocity, v.AssemblyAngularVelocity = Vector3.zero, Vector3.zero
 			else
 				table.remove(AntiflingBaseParts, i)
@@ -3922,7 +3922,7 @@ do
 		end
 		for i,v in AntiflingHumanoids do
 			if v:IsDescendantOf(workspace) then
-				v.EvaluateStateMachine = false
+				if v.EvaluateStateMachine then v.EvaluateStateMachine = false end
 			else
 				table.remove(AntiflingHumanoids, i)
 			end
@@ -6627,9 +6627,11 @@ function HatReanimator.Start()
 								end
 							end
 						end
-						blacklist[biggesthat] = true
-						SetUACFrameNetless(biggest, dt, flingcf, Vector3.zero, false, true)
-						pcall(sethiddenproperty, biggest, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and flingpart or nil)
+						if biggesthat then
+							blacklist[biggesthat] = true
+							SetUACFrameNetless(biggest, dt, flingcf, Vector3.zero, false, true)
+							pcall(sethiddenproperty, biggest, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and flingpart or nil)
+						end
 					end
 					if HatReanimator.FlingMethod == 2 then
 						local collide = false
