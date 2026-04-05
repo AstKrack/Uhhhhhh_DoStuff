@@ -30,7 +30,7 @@ local SINDRAGON_HATMAP_CLAWR = table.concat({
 	"",
 }, "|")
 local SINDRAGON_HATMAP_BLOCK = table.concat({
-	"17323421898,",
+	"17323421898,,0, 0, 0, 0, 0, 1, -1, 0, 0, 0, -1, 0",
 	"14959563852,",
 }, "|")
 
