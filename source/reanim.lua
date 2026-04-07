@@ -5003,6 +5003,7 @@ function HatReanimator.Start()
 		table.clear(Hat2HatRefs)
 		for _,ref in HatRefs do
 			ref.Hat = nil
+			ref.Han = nil
 		end
 	end
 	local function CreatePlaceholder(hat)
@@ -5035,12 +5036,14 @@ function HatReanimator.Start()
 		end
 	end
 	local function RefHatToHatRefs(hat)
+		local handle = hat:FindFirstChild("Handle")
 		local mesh, tex = GetHatMeshAndTexture(hat)
-		if mesh and tex then
+		if handle and mesh and tex then
 			for _,ref in HatRefs do
 				if not ref.Hat then
 					if ref.Name == hat.Name and ref.MeshId == mesh and ref.TextureId == tex then
 						ref.Hat = hat
+						ref.Han = handle
 						Hat2HatRefs[hat] = ref
 						if not ref.PH then
 							ref.PH = CreatePlaceholder(hat)
@@ -5487,7 +5490,7 @@ function HatReanimator.Start()
 		HasHandle = 1,
 		InWorkspace = 2,
 		InCharacter = 3,
-		Equipped = 4
+		Equipped = 4,
 	}
 	local function SetAccoutrementState(hat, state)
 		if sethiddenproperty then
@@ -6768,7 +6771,7 @@ _G_Uhhhhhh.Fling = function(part)
 	if part and part.Parent then
 		if part:IsA("BasePart") then
 			part = part.Parent
-			if part:IsA("Accessory") then
+			if part:IsA("Accessory") or part:IsA("Tool") then
 				part = part.Parent
 			end
 		end
