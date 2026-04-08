@@ -6218,6 +6218,7 @@ function HatReanimator.Start()
 				end
 				HatReanimator.DontFireCharAddOnThisChar = character
 				Player.Character = character
+				oldperma:Destroy()
 				while Humanoid:GetState() ~= Enum.HumanoidStateType.Dead and character:IsDescendantOf(workspace) do
 					if os.clock() > cdsbeffect then break end
 					task.wait()
@@ -8631,40 +8632,45 @@ local function ForceModuleReload(force)
 	local filesofbuiltins_m = {"v_moveset1.lua", "v_moveset2.lua", "v_moveset3.lua", "v_dance1.lua", "v_dance2.lua"}
 	local filesofbuiltins_d = {"d_limbmap.lua", "d_hatsmap.lua"}
 	SaveData.ContentHash = SaveData.ContentHash or {}
-	xpcall(function()
-		local s, resp = pcall(request, {
-			Method = "GET",
-			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/content/",
-		})
-		if s and resp and resp.StatusCode == 200 then
-			s, resp = pcall(HttpService.JSONDecode, HttpService, resp.Body)
-			if s and resp then
-				for _,file in resp do
-					if file.name and file.sha then
-						if SaveData.ContentHash[file.name] ~= file.sha then
-							SaveData.ContentHash[file.name] = file.sha
-							if table.find(filesofbuiltins, file.name) then
-								local path = "UhhhhhhReanim/BuiltinModules/" .. file.name
-								if isfile(path) then
-									InitLogsText.Text ..= "\n[LOG] BuiltinModules/" .. file.name .. " has been updated on the repo."
-									delfile(path)
-								end
-							else
-								local path = AssetGetPathFromFilename(file.name)
-								if isfile(path) then
-									InitLogsText.Text ..= "\n[LOG] Downloaded Asset " .. file.name .. " removed because outdated."
-									delfile(path)
+	if force ~= "SKIPHASH" then
+		xpcall(function()
+			local s, resp = pcall(request, {
+				Method = "GET",
+				Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/content/",
+			})
+			if s and resp and resp.StatusCode == 200 then
+				s, resp = pcall(HttpService.JSONDecode, HttpService, resp.Body)
+				if s and resp then
+					for _,file in resp do
+						if file.name and file.sha then
+							if SaveData.ContentHash[file.name] ~= file.sha then
+								SaveData.ContentHash[file.name] = file.sha
+								if table.find(filesofbuiltins, file.name) then
+									local path = "UhhhhhhReanim/BuiltinModules/" .. file.name
+									if isfile(path) then
+										InitLogsText.Text ..= "\n[LOG] BuiltinModules/" .. file.name .. " has been updated on the repo."
+										delfile(path)
+									end
+								else
+									local path = AssetGetPathFromFilename(file.name)
+									if isfile(path) then
+										InitLogsText.Text ..= "\n[LOG] Downloaded Asset " .. file.name .. " removed because outdated."
+										delfile(path)
+									end
 								end
 							end
 						end
 					end
 				end
 			end
-		end
+			InitLogsText.Text ..= "\n[LOG] Checked all SHA1 hashes..."
+		end, function()
+			InitLogsText.Text ..= "\n[WARN] SHA1 hashes check failed!"
+		end)
+	else
+		InitLogsText.Text ..= "\n[WARN] Chill. We are just reloading user modules."
 		InitLogsText.Text ..= "\n[LOG] Checked all SHA1 hashes..."
-	end, function()
-		InitLogsText.Text ..= "\n[WARN] SHA1 hashes check failed!"
-	end)
+	end
 	local wasold = false
 	if SaveData.VanillaModuleCache then
 		wasold = true
@@ -8676,7 +8682,7 @@ local function ForceModuleReload(force)
 		local exist = false
 		local s, a = pcall(isfile, path)
 		if s and a then exist = true end
-		if force then exist = false end
+		if force == "ALL" then exist = false end
 		if exist then
 			InitLogsText.Text ..= "\n[LOG] " .. x .. " already downloaded :D"
 		else
@@ -8697,7 +8703,7 @@ local function ForceModuleReload(force)
 		local s, a = pcall(isfile, path)
 		if s and a then exist = true end
 		if wasold then exist = false end
-		if force then exist = false end
+		if force == "ALL" then exist = false end
 		local data = ""
 		if exist then
 			InitLogsText.Text ..= "\n[LOG] Reading local VANILLA " .. x .. "..."
@@ -8769,7 +8775,20 @@ UI.CreateButton(MainPage, "Reload Modules", 20).Activated:Connect(function()
 	tween.Completed:Connect(function()
 		CracktroFrame.Interactable = true
 	end)
-	ForceModuleReload(true)
+	ForceModuleReload("ALL")
+end)
+UI.CreateButton(MainPage, "Reload User Modules", 20).Activated:Connect(function()
+	CracktroFrame.Interactable = false
+	CracktroFrame.Visible = true
+	MainPage.Interactable = false
+	local tween = TweenService:Create(CracktroFrame, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {
+		Position = UDim2.new(0.5, 0, 0.5, 0),
+	})
+	tween:Play()
+	tween.Completed:Connect(function()
+		CracktroFrame.Interactable = true
+	end)
+	ForceModuleReload("SKIPHASH")
 end)
 UI.CreateText(MainPage, "\n\n\n<b>DANGER ZONE</b>", 15, Enum.TextXAlignment.Center)
 local clearcontenthash, clearcontenthashtext = UI.CreateButton(MainPage, "CLEAR ALL DOWNLOADED CONTENT", 15)
