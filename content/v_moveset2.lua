@@ -1703,7 +1703,7 @@ AddModule(function()
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 				rt *= CFrame.Angles(0, 0, math.rad(-60))
 				nt = NECKC0 * CFrame.Angles(0, 0, math.rad(60))
-				rst = CFrame.new(1.25, 0.5, -0.25) * CFrame.Angles(math.rad(90), 0, math.rad(-90)) * RIGHTSHOULDERC0
+				rst = CFrame.new(1.25, 0.5, -0.25) * CFrame.Angles(math.rad(90), 0, math.rad(-60)) * RIGHTSHOULDERC0
 				lst = CFrame.new(-1.25, 0.5, -0.25) * CFrame.Angles(math.rad(95), 0, math.rad(10)) * LEFTSHOULDERC0
 				gunoff = CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(180), 0, 0)
 				AimTowards(MouseHit())
@@ -1935,7 +1935,7 @@ AddModule(function()
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 				rt *= CFrame.Angles(0, 0, math.rad(-60))
 				nt = NECKC0 * CFrame.Angles(0, 0, math.rad(60))
-				rst = CFrame.new(1.25, 0.5, -0.25) * CFrame.Angles(math.rad(90), 0, math.rad(-90)) * RIGHTSHOULDERC0
+				rst = CFrame.new(1.25, 0.5, -0.25) * CFrame.Angles(math.rad(90), 0, math.rad(-60)) * RIGHTSHOULDERC0
 				lst = CFrame.new(-1.25, 0.5, -0.25) * CFrame.Angles(math.rad(95), 0, math.rad(10)) * LEFTSHOULDERC0
 				gunoff = CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(180), 0, 0)
 				AimTowards(MouseHit())
