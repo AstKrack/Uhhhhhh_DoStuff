@@ -6451,9 +6451,7 @@ function HatReanimator.Start()
 		local ltm = Reanimate.LocalTransparencyModifier
 		for _,v in BaseParts do
 			v.CanCollide = false
-			if not v:FindFirstAncestorWhichIsA("Tool") then
-				v.LocalTransparencyModifier = ltm
-			end
+			v.LocalTransparencyModifier = ltm
 		end
 		local t = os.clock()
 		local slocked = {}
@@ -6474,6 +6472,7 @@ function HatReanimator.Start()
 					local handle = v:FindFirstChild("Handle")
 					if handle and handle:IsA("BasePart") then
 						handle.CanCollide = false
+						handle.LocalTransparencyModifier = ltm
 						if HatReanimator.ToolHolding then
 							handlethese[handle] = rightarm.CFrame * rightgrip * v.Grip:Inverse()
 						else
@@ -6674,6 +6673,7 @@ function HatReanimator.Start()
 					local handle = hat:FindFirstChild("Handle")
 					if handle and handle:IsA("BasePart") then
 						handle.CanCollide = false
+						handle.LocalTransparencyModifier = ltm
 						local ref = Hat2HatRefs[hat]
 						if blacklist[hat] then
 							if ref then ref.Aligned = false end
@@ -6732,7 +6732,7 @@ function HatReanimator.Start()
 			end
 		end
 		RunService.PreRender:Wait()
-		if Reanimate:ShouldRotationType() then
+		if RCRootPart and Reanimate:ShouldRotationType() then
 			local ocf = RCRootPart.CFrame
 			local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
 			local bx, by, bz = ocf:ToEulerAngles(Enum.RotationOrder.YXZ)
@@ -6742,7 +6742,7 @@ function HatReanimator.Start()
 			end
 			RCRootPart.CFrame = tcf
 		end
-		if HatReanimator.HatsSpin then
+		if HatReanimator.HatSpin then
 			for _,handle in slocked do
 				if math.random() < 0.5 then
 					handle.CFrame = handle.CFrame * CFrame.Angles(math.random() * 2 * math.pi, math.random() * 2 * math.pi, math.random() * 2 * math.pi)
