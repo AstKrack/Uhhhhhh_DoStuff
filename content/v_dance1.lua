@@ -19,6 +19,13 @@ local function AddModule(m)
 	table.insert(modules, m)
 end
 
+local function SetC0C1Joint(j, c0, c1, scale)
+	local t = c0 * c1:Inverse()
+	t += t.Position * (scale - 1)
+	t = j.C0:Inverse() * t * j.C1
+	j.Transform = t
+end
+
 AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
