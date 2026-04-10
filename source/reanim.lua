@@ -9193,7 +9193,7 @@ local function RefreshOnlineUserModules()
 			UI.CreateText(page, "By " .. (aitemu.User or "Uncknown"), 15, Enum.TextXAlignment.Left)
 			UI.CreateText(page, aitemu.Description, 15, Enum.TextXAlignment.Left)
 			UI.CreateSeparator(page)
-			local download, downloadtext = UI.CreateButton(page, "Buy Module for " .. (aitemu.Cost or "67 B"), 15)
+			local download, downloadtext = UI.CreateButton(page, "Buy Module for " .. (aitemu.Cost or "670 B"), 20)
 			local path = "UhhhhhhReanim/Modules/" .. aitemu.File
 			if isfile(path) then
 				downloadtext.Text = "You already have this"

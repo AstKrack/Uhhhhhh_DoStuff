@@ -2,3 +2,15 @@ name = Bhop dance this is a test
 user = noober
 desc = Bhop emote because lazy Steve didn't make it
 file = nbhoptest/Bhop module.lua
+
+name = airy's "ZIP File" port :3
+user = airythefemboylover
+desc = steve at the keys, idk what description
+cost = 4.3 KB
+file = zipfileairysport/v_dance3.lua
+
+name = nil's bin
+user = nil
+desc = whatever i'm just adding most random emotes
+cost = 11 KB
+file = nilsbin/allinone.lua
