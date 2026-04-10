@@ -8978,6 +8978,7 @@ end)
 
 UI.CreateText(MarketPage, "welcome to <b>the user generated content marketplace thing</b>", 15, Enum.TextXAlignment.Center)
 UI.CreateText(MarketPage, "this where you download ur movesets and dances made by actual people and totally not ai", 15, Enum.TextXAlignment.Center)
+UI.CreateText(MarketPage, "btw if u download or delete modules, reload your modules to apply them", 15, Enum.TextXAlignment.Center)
 local GetMarketList_cache = {}
 local function GetMarketList()
 	local aitemus, file2name = GetMarketList_cache.aitemus, GetMarketList_cache.file2name
