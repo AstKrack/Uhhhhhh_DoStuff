@@ -31,4 +31,4 @@ name = GooglyEyes's Dancezz
 user = totallyMr_eyes
 desc = 
 cost = 70 MB
-file = awesthealter1/dances.lua
+file = googlyeyes/allinone.lua
