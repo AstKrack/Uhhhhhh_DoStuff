@@ -6874,7 +6874,7 @@ function HatReanimator.Start()
 						handle.CanCollide = false
 						local lltm = ltm
 						if Reanimate.FirstPersonBody then
-							if not v:GetAttribute("AttachHead") then
+							if not handle:GetAttribute("AttachHead") then
 								lltm = 0
 							end
 						end
@@ -6931,7 +6931,7 @@ function HatReanimator.Start()
 					if tcf then
 						local lltm = ltm
 						if Reanimate.FirstPersonBody then
-							if not v:GetAttribute("AttachHead") then
+							if not ph:GetAttribute("AttachHead") then
 								lltm = 0
 							end
 						end
