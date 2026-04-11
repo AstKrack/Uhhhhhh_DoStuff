@@ -383,6 +383,7 @@ do
 		"dm_robotadventure.ft2.mp3",
 		"dm_unaseraariccione.ft2.mp3",
 		"fr_keygen31.ft2.mp3",
+		"fr_brokenheart.ft2.mp3",
 		"lightinursoul.graphic.png",
 		"letriangul.graphic.png",
 	}
@@ -603,6 +604,7 @@ MusicPlayer.Database = {
 	{"dm_afterburner.ft2.mp3", "Dubmood - Afterburner"},
 	{"dm_robotadventure.ft2.mp3", "Dubmood & Zabutom - Robot Adventure Remix"},
 	{"4m_brokenheart.ft2.mp3", "4-Mat - <3 Broken Heart <3"},
+	{"fr_brokenheart.ft2.mp3", "Hoster's FR - Alternate Broken Heart"},
 	{"dm_change.ft2.mp3", "Dubmood - Change (Radio Edit)"},
 	{math.random() < 0.5 and "dm_deadscene2024.ft2.mp3" or "dm_deadscene2024alt.ft2.mp3", "Dubmood - The Scene is Dead 2024"},
 	{"dm_e1m777.ft2.mp3", "Dubmood & MBR - E1M777"},
