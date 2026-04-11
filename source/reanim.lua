@@ -3516,6 +3516,15 @@ do
 			local sensitivity = curveY * 0.75 + 0.25
 			return Vector2.new(1, sensitivity) * delta
 		end
+		local thumbstickCurve do
+			local K_CURVATURE = 2 -- amount of upwards curvature (0 is flat)
+			local K_DEADZONE = 0.1 -- deadzone
+			function thumbstickCurve(x)
+				local fDeadzone = (math.abs(x) - K_DEADZONE)/(1 - K_DEADZONE)
+				local fCurve = (math.exp(K_CURVATURE*fDeadzone) - 1)/(math.exp(K_CURVATURE) - 1)
+				return math.sign(x)*math.clamp(fCurve, 0, 1)
+			end
+		end
 		UserInputService.InputBegan:Connect(function(input, gpe)
 			if GuiService.MenuIsOpen then return end
 			if UserInputService:GetFocusedTextBox() then return end
