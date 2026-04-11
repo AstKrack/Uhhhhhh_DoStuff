@@ -9237,7 +9237,7 @@ local function RefreshUserModules()
 				UI.CreateSeparator(page)
 				local aitemu = file2aitemu[x]
 				if aitemu then
-					UI.CreateButton(MarketPage, "Redownload/Update", 20).Activated:Connect(function()
+					UI.CreateButton(page, "Redownload/Update", 20).Activated:Connect(function()
 						delfile(path)
 						AssetDownloadAgent(aitemu.Source, aitemu.File, path)
 						RefreshUserModules()
