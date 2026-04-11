@@ -4673,7 +4673,7 @@ function LimbReanimator.Start()
 							lltm = ltm
 						else
 							local lol = v:FindFirstChild("AccessoryWeld")
-							if lol and lol:IsA("Weld") and lol.Part0 and lol.Part0.Name == "Head" then
+							if lol and lol:IsA("Weld") and lol.Part1 and lol.Part1.Name == "Head" then
 								lltm = ltm
 							end
 						end
