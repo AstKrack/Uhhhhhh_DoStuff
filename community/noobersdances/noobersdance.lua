@@ -428,7 +428,6 @@ table.insert(modules,     function()
     
         return m
     end)
-table.insert(modules,     function() return {} end)
 table.insert(modules,     function()
         local m = {}
     
