@@ -75,7 +75,7 @@ table.insert(modules,     function()
     	local start    = 0
     
     	m.Init = function(figure)
-    		SetOverrideDanceMusic(AssetGetContentId("nil_Cinderella.mp3")
+    		SetOverrideDanceMusic(AssetGetContentId("nil_Cinderella.mp3"))
     
     		start           = os.clock()
     		animator        = AnimLib.Animator.new()
@@ -278,7 +278,7 @@ table.insert(modules,     function()
     		start           = os.clock()
     		animator        = AnimLib.Animator.new()
     		animator.rig    = figure
-    		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("nil_Onion.anim")
+    		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("nil_Onion.anim"))
     		animator.looped = true
     		animator.speed  = 1
     	end
@@ -520,7 +520,7 @@ table.insert(modules,     function()
     		start           = os.clock()
     		animator        = AnimLib.Animator.new()
     		animator.rig    = figure
-    		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("nil_Birthday.anim")
+    		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("nil_Birthday.anim"))
     		animator.looped = true
     		animator.speed  = 1
     	end
@@ -558,7 +558,7 @@ table.insert(modules,     function()
     	local start    = 0
     
     	m.Init = function(figure)
-    		SetOverrideDanceMusic(AssetGetContentId("nil_Pirate.mp3")
+    		SetOverrideDanceMusic(AssetGetContentId("nil_Pirate.mp3"))
     
     		start           = os.clock()
     		animator        = AnimLib.Animator.new()
@@ -660,41 +660,7 @@ table.insert(modules,     function()
     
     	return m
     end)
-table.insert(modules,     function(parent)
-    		Util_CreateText(parent, "how do i add distortionsoundeffect?", 14, Enum.TextXAlignment.Center)
-    	end
-    
-    	m.SaveConfig = function() return {} end
-    	m.LoadConfig  = function(save) end
-    
-    	local animator = nil
-    	local start    = 0
-    
-    	m.Init = function(figure)
-    		SetOverrideDanceMusic(AssetGetContentId("nil_omni.mp3"), "omniman", 1, NumberRange.new(0, 39))
-    
-    		start           = os.clock()
-    		animator        = AnimLib.Animator.new()
-    		animator.rig    = figure
-    		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("nil_omni.anim"))
-    		animator.looped = false
-    		animator.speed  = 1
-    	end
-    
-    	m.Update = function(dt, figure)
-    		animator:Step(os.clock() - start)
-    	end
-    
-    	m.Update = function(dt: number, figure: Model)
-    		animator:Step(GetOverrideDanceMusicTime())
-    	end
-    
-    	m.Destroy = function(figure)
-    		animator = nil
-    	end
-    
-    	return m
-    end)
+table.insert(modules,     function() return {} end)
 table.insert(modules,     function()
     	local m = {}
     
@@ -714,7 +680,7 @@ table.insert(modules,     function()
     	local start    = 0
     
     	m.Init = function(figure)
-    		SetOverrideDanceMusic(AssetGetContentId("nil_Bong.mp3")
+    		SetOverrideDanceMusic(AssetGetContentId("nil_Bong.mp3"))
     
     		start           = os.clock()
     		animator        = AnimLib.Animator.new()

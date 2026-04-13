@@ -428,27 +428,7 @@ table.insert(modules,     function()
     
         return m
     end)
-table.insert(modules,     function(parent)
-            Util_CreateText(parent, "No settings.", 14, Enum.TextXAlignment.Center)
-        end)
 table.insert(modules,     function() return {} end)
-table.insert(modules,     function(save) end)
-table.insert(modules,     function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("HakariForsaken.mp3"), "Hakari from fatsaken", 0.8, NumberRange.new(0, 45.5))
-    
-            start           = os.clock()
-            animator        = AnimLib.Animator.new()
-            animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("HakariForsaken.anim"))
-            animator.looped = true
-            animator.speed  = 1
-        end)
-table.insert(modules,     function(dt, figure)
-            animator:Step(os.clock() - start)
-        end)
-table.insert(modules,     function(figure)
-            animator = nil
-        end)
 table.insert(modules,     function()
         local m = {}
     

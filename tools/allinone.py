@@ -67,7 +67,7 @@ def extract_closures(lua_code):
     i = 0
     length = len(lua_code)
     while i < length:
-        match = re.search(r'\bfunction\b', lua_code[i:])
+        match = re.search(r'\bfunction\(\)', lua_code[i:])
         if not match:
             break
         start = i + match.start()
