@@ -863,7 +863,7 @@ table.insert(modules,     function()
         m.ModuleType  = "DANCE"
         m.Name        = "macarena"
         m.Description = "good dance from like 2022"
-        m.Assets = {"noober_Macarena.anim@MARKET/noobersdances/macarena.anim", "noober_Macarena.mp3@MARKET/noobersdances/Macarena.mp3"}
+        m.Assets = {"noober_Macarena.anim@MARKET/noobersdances/Macarena.anim", "noober_Macarena.mp3@MARKET/noobersdances/Macarena.mp3"}
     
         m.Config = function(parent)
             Util_CreateText(parent, "No settings.", 14, Enum.TextXAlignment.Center)

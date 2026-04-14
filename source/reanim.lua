@@ -8279,11 +8279,11 @@ local function GiveFunctionsToFunction(func)
 	env.FallenPartsDestroyHeight = FallenPartsDestroyHeight
 end
 local function ClearModules()
+	table.clear(MovementStyles)
+	table.clear(DanceableDances)
 	Util.ClearAllChildrenGui(MovesetsPage.List)
 	Util.ClearAllChildrenGui(DancesPage.List)
 	RefreshKeybinds()
-	table.clear(MovementStyles)
-	table.clear(DanceableDances)
 end
 local function GetModuleHash(m)
 	if m.Hash then return m.Hash end
