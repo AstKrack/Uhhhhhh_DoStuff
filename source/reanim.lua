@@ -4795,11 +4795,35 @@ function LimbReanimator.Start()
 				else
 					pcall(sethiddenproperty, Humanoid, "NetworkHumanoidState", Enum.HumanoidStateType[({"Running", "PlatformStanding", "Jumping", "Ragdoll", "Seated", "Physics"})[math.random(1, 6)]])
 				end
-				if Reanimate:ShouldRotationType() then
+				if not flingtarget and Reanimate:ShouldRotationType() then
 					RunService.PreRender:Wait()
 					local ocf = RCRootPart.CFrame
 					Reanimate:CameraLockCharacter()
-					RootPart.CFrame = RCRootPart.CFrame:ToWorldSpace(ocf:ToObjectSpace(RootPart.CFrame))
+					for _,map in LimbMapping do
+						local v = map.Reference
+						if v then
+							local cf = CFrame.identity
+							local p0, p1 = ReanimCharacter:FindFirstChild(map.RPart0), ReanimCharacter:FindFirstChild(map.RPart1)
+							if map.RPart0 == "ROOT" then
+								p0 = RootPart
+							end
+							if p0 and p1 then
+								if map.Type == 1 then
+									cf = p0.CFrame:ToObjectSpace(p1.CFrame)
+								end
+								if map.Type == 2 then
+									local offset = map.Offset or CFrame.identity
+									local c0, c1 = CFrame.new(map.C0), CFrame.new(map.C1)
+									local transform = offset * (p0.CFrame * c0):ToObjectSpace(p1.CFrame * c1) * offset:Inverse()
+									cf = v.C0 * transform * v.C1:Inverse()
+								end
+							end
+							if dorep or not map.CFrame then
+								map.CFrame = cf
+							end
+							Util.SetMotor6DOffset(v, map.CFrame)
+						end
+					end
 				end
 			end
 		end
