@@ -1553,6 +1553,8 @@ AddModule(function()
 		end
 	end
 	m.Destroy = function(figure: Model?)
+		ContextActions:UnbindAction("Uhhhhhh_VRWaveL")
+		ContextActions:UnbindAction("Uhhhhhh_VRWaveR")
 	end
 	return m
 end)
